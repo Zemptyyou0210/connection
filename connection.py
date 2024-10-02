@@ -162,146 +162,156 @@ def main():
         key="canvas",
     )
 
-    if st.button("提交"):
-        if canvas_result.image_data is not None and pharmacist:
-            # 使用選擇的日期
-            file_date = selected_date.strftime("%Y.%m.%d")
-            
-            # 創建文件名（不包含副檔名）
-            file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
-            
-            # 創建 Excel 和 PDF 文件名
-            excel_filename = f"{file_base_name}.xlsx"
-            pdf_filename = f"{file_base_name}.pdf"
-
-            # 創建 DataFrame
-            df = pd.DataFrame(data).T
-            
-            # 添加查核藥師欄位
-            df["查核藥師"] = pharmacist
-
-            # 重新排序列
-            columns_order = COLUMNS + ["查核藥師"]
-            df = df[columns_order]
-
-            # 保存為 Excel 文件
-            with pd.ExcelWriter(excel_filename, engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name='藥品庫存查核', index=True)
+    try:
+        st.write("Debug: Starting main function")
+        st.write(f"Debug: upload_to_drive function exists: {'upload_to_drive' in globals()}")
+        
+        if st.button("提交"):
+            if canvas_result.image_data is not None and pharmacist:
+                # 使用選擇的日期
+                file_date = selected_date.strftime("%Y.%m.%d")
                 
-                # 將簽名保存為圖片
-                img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
-                img_byte_arr = io.BytesIO()
-                img.save(img_byte_arr, format='PNG')
-                img_byte_arr = img_byte_arr.getvalue()
+                # 創建文件名（不包含副檔名）
+                file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
                 
-                # 將簽名圖片添加到新的工作表
-                worksheet = writer.book.create_sheet('病房單位主管簽名')
-                img = XLImage(io.BytesIO(img_byte_arr))
-                worksheet.add_image(img, 'A1')
-            
-            st.success(f"您的回答和簽名已保存到文件: {excel_filename}")
+                # 創建 Excel 和 PDF 文件名
+                excel_filename = f"{file_base_name}.xlsx"
+                pdf_filename = f"{file_base_name}.pdf"
 
-            # 生成 PDF 文件
-            try:
-                # 創建 PDF 文檔，使用 A4 橫向
-                page_width, page_height = A4
-                doc = SimpleDocTemplate(pdf_filename, pagesize=(page_height, page_width), leftMargin=10*mm, rightMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
-                story = []
-                styles = getSampleStyleSheet()
+                # 創建 DataFrame
+                df = pd.DataFrame(data).T
+                
+                # 添加查核藥師欄位
+                df["查核藥師"] = pharmacist
 
-                # 註冊字體
-                pdfmetrics.registerFont(TTFont('KaiU', 'fonts/kaiu.ttf'))  # 標楷體
-                pdfmetrics.registerFont(TTFont('Calibri', 'fonts/calibri.ttf'))    # Calibri
+                # 重新排序列
+                columns_order = COLUMNS + ["查核藥師"]
+                df = df[columns_order]
 
-                # 創建包含中文字體的樣式
-                title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
-                chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
-                english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
+                # 保存為 Excel 文件
+                excel_buffer = io.BytesIO()
+                with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+                    df.to_excel(writer, sheet_name='藥品庫存查核', index=True)
+                    
+                    # 將簽名保存為圖片
+                    img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
+                    img_byte_arr = io.BytesIO()
+                    img.save(img_byte_arr, format='PNG')
+                    img_byte_arr = img_byte_arr.getvalue()
+                    
+                    # 將簽名圖片添加到新的工作表
+                    worksheet = writer.book.create_sheet('病房單位主管簽名')
+                    img = XLImage(io.BytesIO(img_byte_arr))
+                    worksheet.add_image(img, 'A1')
+                
+                excel_buffer.seek(0)
 
-                # 添加標題
-                story.append(Paragraph('單位庫存1-4級管制藥品月查核表', title_style))
-                story.append(Spacer(1, 5*mm))
+                # 生成 PDF 文件
+                pdf_buffer = io.BytesIO()
+                try:
+                    # 創建 PDF 文檔，使用 A4 橫向
+                    page_width, page_height = A4
+                    doc = SimpleDocTemplate(pdf_buffer, pagesize=(page_height, page_width), leftMargin=10*mm, rightMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
+                    story = []
+                    styles = getSampleStyleSheet()
 
-                # 創建簽名圖片
-                img = ReportLabImage(BytesIO(img_byte_arr))
-                img.drawHeight = 15*mm
-                img.drawWidth = 30*mm
+                    # 註冊字體
+                    pdfmetrics.registerFont(TTFont('KaiU', 'fonts/kaiu.ttf'))  # 標楷體
+                    pdfmetrics.registerFont(TTFont('Calibri', 'fonts/calibri.ttf'))    # Calibri
 
-                # 準備表格數據
-                table_data = [
-                    ['病房單位', 'DRUG', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '', '', '', '']
-                ]
+                    # 創建包含中文字體的樣式
+                    title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
+                    chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
+                    english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
 
-                # 添加藥品數據
-                first_row = True
-                for drug, info in data.items():
-                    row = [
-                        ward,
-                        Paragraph(drug, english_style),
-                        str(WARD_DRUGS[ward][drug]),
-                        str(info['現貨']),
-                        str(info['空瓶']),
-                        str(info['處方箋']),
-                        str(info['EXP>6month']),
-                        'V' if info['是否符合'] == 'Y' else '',
-                        'V' if info['是否符合'] == 'N' else '',
-                        selected_date.strftime("%Y/%m/%d"),
-                        img if first_row else '',  # 只在第一行添加簽名
-                        pharmacist,
-                        Paragraph(info['備註'], chinese_style)
+                    # 添加標題
+                    story.append(Paragraph('單位庫存1-4級管制藥品月查核表', title_style))
+                    story.append(Spacer(1, 5*mm))
+
+                    # 創建簽名圖片
+                    img = ReportLabImage(BytesIO(img_byte_arr))
+                    img.drawHeight = 15*mm
+                    img.drawWidth = 30*mm
+
+                    # 準備表格數據
+                    table_data = [
+                        ['病房單位', 'DRUG', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
+                        ['', '', '', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '', '', '', '']
                     ]
-                    table_data.append(row)
-                    first_row = False
 
-                # 創建表格，調整列寬以適應 A4 橫向
-                available_width = page_height - 20*mm
-                col_widths = [25*mm, 50*mm, 15*mm, 15*mm, 15*mm, 15*mm, 15*mm, 12*mm, 12*mm, 20*mm, 30*mm, 20*mm, 33*mm]
-                table = Table(table_data, colWidths=col_widths)
+                    # 添加藥品數據
+                    for drug, info in data.items():
+                        row = [
+                            ward,
+                            Paragraph(drug, english_style),
+                            str(WARD_DRUGS[ward][drug]),
+                            str(info['現貨']),
+                            str(info['空瓶']),
+                            str(info['處方箋']),
+                            str(info['EXP>6month']),
+                            'V' if info['是否符合'] == 'Y' else '',
+                            'V' if info['是否符合'] == 'N' else '',
+                            selected_date.strftime("%Y/%m/%d"),
+                            img,
+                            pharmacist,
+                            Paragraph(info['備註'], chinese_style)
+                        ]
+                        table_data.append(row)
 
-                # 設置表格樣式
-                table.setStyle(TableStyle([
-                    ('FONT', (0, 0), (-1, -1), 'KaiU'),
-                    ('FONT', (1, 2), (1, -1), 'Calibri'),
-                    ('FONTSIZE', (0, 0), (-1, -1), 9),
-                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('SPAN', (3, 0), (8, 0)),
-                    ('SPAN', (10, 2), (10, -1)),  # 合併單位主管欄位
-                    ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
-                ]))
+                    # 創建表格，調整列寬以適應 A4 橫向
+                    available_width = page_height - 20*mm
+                    col_widths = [25*mm, 50*mm, 15*mm, 15*mm, 15*mm, 15*mm, 15*mm, 12*mm, 12*mm, 20*mm, 30*mm, 20*mm, 33*mm]
+                    table = Table(table_data, colWidths=col_widths)
 
-                story.append(table)
+                    # 設置表格樣式
+                    table.setStyle(TableStyle([
+                        ('FONT', (0, 0), (-1, -1), 'KaiU'),
+                        ('FONT', (1, 2), (1, -1), 'Calibri'),
+                        ('FONTSIZE', (0, 0), (-1, -1), 9),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                        ('SPAN', (3, 0), (8, 0)),
+                        ('SPAN', (10, 2), (10, -1)),  # 合併單位主管欄位
+                        ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
+                    ]))
 
-                # 生成 PDF
-                doc.build(story)
+                    story.append(table)
 
-                st.success(f"PDF 文件已生成: {pdf_filename}")
+                    # 生成 PDF
+                    doc.build(story)
+                    pdf_buffer.seek(0)
 
-            except Exception as e:
-                st.error(f"生成 PDF 文件時發生錯誤: {str(e)}")
-                print(traceback.format_exc())
+                except Exception as e:
+                    logging.error(f"生成 PDF 文件時發生錯誤: {str(e)}")
+                    st.error(f"生成 PDF 文件時發生錯誤: {str(e)}")
+                    print(traceback.format_exc())
 
-            # 上傳到 Google Drive 的指定資料夾
-            excel_file_id = upload_to_drive(excel_filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', excel_buffer)
-            pdf_file_id = upload_to_drive(pdf_filename, 'application/pdf', pdf_buffer)
+                try:
+                    excel_file_id = upload_to_drive(excel_filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', excel_buffer)
+                    st.success(f"Excel 文件已上傳，ID: {excel_file_id}")
+                    
+                    pdf_file_id = upload_to_drive(pdf_filename, 'application/pdf', pdf_buffer)
+                    st.success(f"PDF 文件已上傳，ID: {pdf_file_id}")
 
-            st.success(f"Excel 文件已上傳到指定的 Google Drive 資料夾，文件 ID: {excel_file_id}")
-            st.success(f"PDF 文件已上傳到指定的 Google Drive 資料夾，文件 ID: {pdf_file_id}")
+                    # 生成直接連結到文件的 URL
+                    excel_url = f"https://drive.google.com/file/d/{excel_file_id}/view"
+                    pdf_url = f"https://drive.google.com/file/d/{pdf_file_id}/view"
 
-            # 生成直接連結到文件的 URL
-            excel_url = f"https://drive.google.com/file/d/{excel_file_id}/view"
-            pdf_url = f"https://drive.google.com/file/d/{pdf_file_id}/view"
+                    st.markdown(f"[點擊此處查看 Excel 文件]({excel_url})")
+                    st.markdown(f"[點擊此處查看 PDF 文件]({pdf_url})")
+                except Exception as e:
+                    logging.error(f"上傳文件時發生錯誤: {str(e)}")
+                    st.error(f"上傳文件失敗: {str(e)}")
 
-            st.markdown(f"[點擊此處查看 Excel 文件]({excel_url})")
-            st.markdown(f"[點擊此處查看 PDF 文件]({pdf_url})")
-
-        else:
-            if not pharmacist:
-                st.error("請選擇查核藥師")
-            if canvas_result.image_data is None:
-                st.error("請在簽名欄中簽名")
+            else:
+                if not pharmacist:
+                    st.error("請選擇查核藥師")
+                if canvas_result.image_data is None:
+                    st.error("請在簽名欄中簽名")
+    except Exception as e:
+        logging.error(f"主函數執行時發生錯誤: {str(e)}")
+        st.error(f"應用程序遇到錯誤: {str(e)}")
 
 if __name__ == "__main__":
     main()
