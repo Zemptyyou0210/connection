@@ -190,7 +190,7 @@ def main():
 
                 # 註冊字體
                 pdfmetrics.registerFont(TTFont('KaiU', 'fonts/kaiu.ttf'))  # 標楷體
-                pdfmetrics.registerFont(TTFont('Calibri', r'C:\Windows\Fonts\calibri.ttf'))    # Calibri
+                pdfmetrics.registerFont(TTFont('Calibri', 'fonts/calibri.ttf'))    # Calibri
 
                 # 創建包含中文字體的樣式
                 title_style = ParagraphStyle('TitleStyle', fontName='DFKai-SB', fontSize=16, alignment=1)
