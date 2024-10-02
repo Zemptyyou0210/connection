@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
 import io
@@ -22,47 +22,59 @@ import traceback
 # 定義不同病房的藥品列表和庫存限制
 WARD_DRUGS = {
     "6A": {
-        "Morphine HCl 10mg/1mL/Amp": 20,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 15,
-        "Codeine phosphate 15mg/imL INJ": 25,
-        "Lorazepam(針劑) 2mg/mL/Amp": 20,
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
+    },
+    "MICU": {
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
+    },
+    "SICU": {
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
     },
     "7A": {
-        "Morphine HCl 10mg/1mL/Amp": 25,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 30,
-        "Codeine phosphate 15mg/imL INJ": 25
-    },
-    "8A": {
-        "Morphine HCl 10mg/1mL/Amp": 25,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 30,
-        "Codeine phosphate 15mg/imL INJ": 25
-    },
-    "9A": {
-        "Morphine HCl 10mg/1mL/Amp": 25,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 30,
-        "Codeine phosphate 15mg/imL INJ": 25
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
     },
     "7B": {
-        "Morphine HCl 10mg/1mL/Amp": 25,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 30,
-        "Codeine phosphate 15mg/imL INJ": 25
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
+    },
+    "8A": {
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
     },
     "8B": {
-        "Morphine HCl 10mg/1mL/Amp": 25,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 30,
-        "Codeine phosphate 15mg/imL INJ": 25
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
+    },
+    "9A": {
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
     },
     "9B": {
-        "Morphine HCl 10mg/1mL/Amp": 25,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 30,
-        "Codeine phosphate 15mg/imL INJ": 25
-    }           
+        "Morphine HCl 10mg/1mL/Amp": 30,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
+        "Codeine phosphate 15mg/imL INJ": 20,
+        "Lorazepam(針劑) 2mg/mL/Amp": 35
+    }
 }
 
 # 定義列名
@@ -100,6 +112,10 @@ def create_drug_form(ward, drugs):
 def main():
     st.title("藥品庫存查核表")
 
+    # 添加日期選擇
+    today = datetime.now().date()
+    selected_date = st.date_input("選擇日期", today, max_value=today)
+
     # 選擇病房
     ward = st.selectbox("請選擇病房", list(WARD_DRUGS.keys()))
 
@@ -127,11 +143,11 @@ def main():
 
     if st.button("提交"):
         if canvas_result.image_data is not None and pharmacist:
-            # 獲取當前日期
-            current_date = datetime.now().strftime("%Y.%m.%d")
+            # 使用選擇的日期
+            file_date = selected_date.strftime("%Y.%m.%d")
             
             # 創建文件名（不包含副檔名）
-            file_base_name = f"{current_date}_{ward}_藥品庫存查核表"
+            file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
             
             # 創建 Excel 和 PDF 文件名
             excel_filename = f"{file_base_name}.xlsx"
@@ -172,34 +188,23 @@ def main():
                 story = []
                 styles = getSampleStyleSheet()
 
-                # 使用相對路徑
-                font_path = os.path.join('fonts', 'msjh.ttf')
-
-                try:
-                    # 嘗試註冊字體
-                    pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', font_path))
-                except Exception as e:
-                    st.error(f"載入字體時發生錯誤: {str(e)}")
-                    st.error(f"當前工作目錄: {os.getcwd()}")
-                    st.error(f"字體檔案是否存在: {os.path.exists(font_path)}")
-                    
-                    # 如果載入失敗，使用上傳功能作為備選方案
-                    uploaded_font = st.file_uploader("上傳微軟正黑體字體檔案", type="ttf")
-                    if uploaded_font:
-                        pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', BytesIO(uploaded_font.read())))
-                    else:
-                        st.warning("無法載入字體檔案，將使用系統預設字體")
-                        # 使用系統預設無襯線字體
-                        pdfmetrics.registerFont(TTFont('DefaultSans', 'Helvetica'))
+                # 註冊字體
+                pdfmetrics.registerFont(TTFont('DFKai-SB', r'C:\Windows\Fonts\kaiu.ttf'))  # 標楷體
+                pdfmetrics.registerFont(TTFont('Calibri', r'C:\Windows\Fonts\calibri.ttf'))    # Calibri
 
                 # 創建包含中文字體的樣式
-                title_style = ParagraphStyle('TitleStyle', fontName='MicrosoftJhengHei', fontSize=16, alignment=1)
-                chinese_style = ParagraphStyle('ChineseStyle', fontName='MicrosoftJhengHei', fontSize=9)
+                title_style = ParagraphStyle('TitleStyle', fontName='DFKai-SB', fontSize=16, alignment=1)
+                chinese_style = ParagraphStyle('ChineseStyle', fontName='DFKai-SB', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
 
                 # 添加標題
                 story.append(Paragraph('單位庫存1-4級管制藥品月查核表', title_style))
                 story.append(Spacer(1, 5*mm))
+
+                # 創建簽名圖片
+                img = ReportLabImage(BytesIO(img_byte_arr))
+                img.drawHeight = 15*mm
+                img.drawWidth = 30*mm
 
                 # 準備表格數據
                 table_data = [
@@ -207,12 +212,8 @@ def main():
                     ['', '', '', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '', '', '', '']
                 ]
 
-                # 創建簽名圖片
-                img = ReportLabImage(BytesIO(img_byte_arr))
-                img.drawHeight = 15*mm
-                img.drawWidth = 25*mm
-
                 # 添加藥品數據
+                first_row = True
                 for drug, info in data.items():
                     row = [
                         ward,
@@ -224,12 +225,13 @@ def main():
                         str(info['EXP>6month']),
                         'V' if info['是否符合'] == 'Y' else '',
                         'V' if info['是否符合'] == 'N' else '',
-                        datetime.now().strftime("%Y/%m/%d"),
-                        img,  # 在單位主管欄位中插入簽名圖片
+                        selected_date.strftime("%Y/%m/%d"),
+                        img if first_row else '',  # 只在第一行添加簽名
                         pharmacist,
                         Paragraph(info['備註'], chinese_style)
                     ]
                     table_data.append(row)
+                    first_row = False
 
                 # 創建表格，調整列寬以適應 A4 橫向
                 available_width = page_height - 20*mm
@@ -245,6 +247,7 @@ def main():
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black),
                     ('SPAN', (3, 0), (8, 0)),
+                    ('SPAN', (10, 2), (10, -1)),  # 合併單位主管欄位
                     ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
                 ]))
 
