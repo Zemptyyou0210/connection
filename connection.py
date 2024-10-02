@@ -193,8 +193,8 @@ def main():
                 pdfmetrics.registerFont(TTFont('Calibri', 'fonts/calibri.ttf'))    # Calibri
 
                 # 創建包含中文字體的樣式
-                title_style = ParagraphStyle('TitleStyle', fontName='DFKai-SB', fontSize=16, alignment=1)
-                chinese_style = ParagraphStyle('ChineseStyle', fontName='DFKai-SB', fontSize=9)
+                title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
+                chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
 
                 # 添加標題
