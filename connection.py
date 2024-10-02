@@ -189,7 +189,7 @@ def main():
                 styles = getSampleStyleSheet()
 
                 # 註冊字體
-                pdfmetrics.registerFont(TTFont('DFKai-SB', r'C:\Windows\Fonts\kaiu.ttf'))  # 標楷體
+                pdfmetrics.registerFont(TTFont('KaiU', 'fonts/kaiu.ttf'))  # 標楷體
                 pdfmetrics.registerFont(TTFont('Calibri', r'C:\Windows\Fonts\calibri.ttf'))    # Calibri
 
                 # 創建包含中文字體的樣式
