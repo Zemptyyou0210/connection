@@ -173,7 +173,8 @@ def main():
                 styles = getSampleStyleSheet()
 
                 # 註冊字體
-                pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', 'msjh.ttf'))
+                font_path = os.path.join(os.environ['SystemRoot'], 'Fonts', 'msjh.ttf')
+                pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', font_path))
 
                 # 創建包含中文字體的樣式
                 title_style = ParagraphStyle('TitleStyle', fontName='MicrosoftJhengHei', fontSize=16, alignment=1)
