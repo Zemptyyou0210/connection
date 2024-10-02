@@ -18,6 +18,10 @@ from io import BytesIO
 import os
 import re
 import traceback
+import json
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 
 # 定義不同病房的藥品列表和庫存限制
 WARD_DRUGS = {
@@ -82,6 +86,23 @@ COLUMNS = ["現貨", "空瓶", "處方箋", "EXP>6month", "是否符合", "備�
 
 # 定義查核藥師列表
 PHARMACISTS = ["", "廖文佑", "洪英哲"]
+
+# 設置 Google Drive API 認證
+creds = service_account.Credentials.from_service_account_info(
+    st.secrets["google_drive_credentials"],
+    scopes=['https://www.googleapis.com/auth/drive.file']
+)
+drive_service = build('drive', 'v3', credentials=creds)
+
+def upload_to_drive(file_name, mime_type, file_content):
+    folder_id = st.secrets["google_drive"]["folder_id"]
+    file_metadata = {
+        'name': file_name,
+        'parents': [folder_id]
+    }
+    media = MediaIoBaseUpload(file_content, mimetype=mime_type, resumable=True)
+    file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return file.get('id')
 
 def create_drug_form(ward, drugs):
     data = {}
@@ -261,6 +282,20 @@ def main():
             except Exception as e:
                 st.error(f"生成 PDF 文件時發生錯誤: {str(e)}")
                 print(traceback.format_exc())
+
+            # 上傳到 Google Drive 的指定資料夾
+            excel_file_id = upload_to_drive(excel_filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', excel_buffer)
+            pdf_file_id = upload_to_drive(pdf_filename, 'application/pdf', pdf_buffer)
+
+            st.success(f"Excel 文件已上傳到指定的 Google Drive 資料夾，文件 ID: {excel_file_id}")
+            st.success(f"PDF 文件已上傳到指定的 Google Drive 資料夾，文件 ID: {pdf_file_id}")
+
+            # 生成直接連結到文件的 URL
+            excel_url = f"https://drive.google.com/file/d/{excel_file_id}/view"
+            pdf_url = f"https://drive.google.com/file/d/{pdf_file_id}/view"
+
+            st.markdown(f"[點擊此處查看 Excel 文件]({excel_url})")
+            st.markdown(f"[點擊此處查看 PDF 文件]({pdf_url})")
 
         else:
             if not pharmacist:
