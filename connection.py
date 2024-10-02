@@ -172,9 +172,25 @@ def main():
                 story = []
                 styles = getSampleStyleSheet()
 
-                # 註冊字體
-                font_path = os.path.join(os.environ['SystemRoot'], 'Fonts', 'msjh.ttf')
-                pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', font_path))
+                # 使用相對路徑
+                font_path = os.path.join('fonts', 'msjh.ttf')
+
+                try:
+                    # 嘗試註冊字體
+                    pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', font_path))
+                except Exception as e:
+                    st.error(f"載入字體時發生錯誤: {str(e)}")
+                    st.error(f"當前工作目錄: {os.getcwd()}")
+                    st.error(f"字體檔案是否存在: {os.path.exists(font_path)}")
+                    
+                    # 如果載入失敗，使用上傳功能作為備選方案
+                    uploaded_font = st.file_uploader("上傳微軟正黑體字體檔案", type="ttf")
+                    if uploaded_font:
+                        pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', BytesIO(uploaded_font.read())))
+                    else:
+                        st.warning("無法載入字體檔案，將使用系統預設字體")
+                        # 使用系統預設無襯線字體
+                        pdfmetrics.registerFont(TTFont('DefaultSans', 'Helvetica'))
 
                 # 創建包含中文字體的樣式
                 title_style = ParagraphStyle('TitleStyle', fontName='MicrosoftJhengHei', fontSize=16, alignment=1)
