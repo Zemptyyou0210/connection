@@ -240,7 +240,7 @@ def main():
 
                 # 設置表格樣式
                 table.setStyle(TableStyle([
-                    ('FONT', (0, 0), (-1, -1), 'DFKai-SB'),
+                    ('FONT', (0, 0), (-1, -1), 'KaiU'),
                     ('FONT', (1, 2), (1, -1), 'Calibri'),
                     ('FONTSIZE', (0, 0), (-1, -1), 9),
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
