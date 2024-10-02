@@ -173,13 +173,11 @@ def main():
                 styles = getSampleStyleSheet()
 
                 # 註冊字體
-                font_path = os.environ.get('FONT_PATH', './fonts/kaiu.ttf')
-                pdfmetrics.registerFont(TTFont('DFKai-SB', font_path))  # 標楷體
-                pdfmetrics.registerFont(TTFont('Calibri', r'C:\Windows\Fonts\calibri.ttf'))    # Calibri
+                pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', 'msjh.ttf'))
 
                 # 創建包含中文字體的樣式
-                title_style = ParagraphStyle('TitleStyle', fontName='DFKai-SB', fontSize=16, alignment=1)
-                chinese_style = ParagraphStyle('ChineseStyle', fontName='DFKai-SB', fontSize=9)
+                title_style = ParagraphStyle('TitleStyle', fontName='MicrosoftJhengHei', fontSize=16, alignment=1)
+                chinese_style = ParagraphStyle('ChineseStyle', fontName='MicrosoftJhengHei', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
 
                 # 添加標題
@@ -249,10 +247,6 @@ def main():
                 st.error("請選擇查核藥師")
             if canvas_result.image_data is None:
                 st.error("請在簽名欄中簽名")
-
-    uploaded_font = st.file_uploader("上傳微軟正黑體字型檔案", type="ttf")
-    if uploaded_font:
-        pdfmetrics.registerFont(TTFont('MicrosoftJhengHei', BytesIO(uploaded_font.read())))
 
 if __name__ == "__main__":
     main()
