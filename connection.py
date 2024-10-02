@@ -23,6 +23,7 @@ import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
+from datetime import date
 
 # 設置日誌記錄
 logging.basicConfig(level=logging.INFO)
@@ -137,9 +138,19 @@ def create_drug_form(ward, drugs):
 def main():
     st.title("藥品庫存查核表")
 
-    # 添加日期選擇
-    today = datetime.now().date()
-    selected_date = st.date_input("選擇日期", today, max_value=today)
+    # 使用 st.empty() 創建一個佔位符
+    date_input_container = st.empty()
+
+    # 獲取今天的日期
+    today = date.today()
+
+    # 使用唯一的 key 創建 date_input
+    selected_date = date_input_container.date_input(
+        "選擇日期",
+        today,
+        max_value=today,
+        key="date_input_unique_key"
+    )
 
     # 選擇病房
     ward = st.selectbox("請選擇病房", list(WARD_DRUGS.keys()))
@@ -175,7 +186,7 @@ def main():
     excel_buffer = None
     pdf_buffer = None
 
-    if st.button("提交"):
+    if st.button("提交", key="submit_button_unique_key"):
         if canvas_result.image_data is not None and pharmacist:
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
@@ -318,9 +329,6 @@ def main():
                 st.exception(e)
         else:
             st.error("無法上傳文件：部分必要資訊缺失")
-
-if __name__ == "__main__":
-    main()
 
 if __name__ == "__main__":
     main()
