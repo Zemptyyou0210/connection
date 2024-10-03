@@ -31,58 +31,65 @@ logging.basicConfig(level=logging.INFO)
 # 定義不同病房的藥品列表和庫存限制
 WARD_DRUGS = {
     "6A": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
+        "Codeine phosphate 15mg/imL INJ": 5,
+        # "Lorazepam 2mg/mL/Amp": 35
     },
     "MICU": {
         "Morphine HCl 10mg/1mL/Amp": 30,
         "Meperidine(Pethidine) 50mg/mL/Amp": 25,
         "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Lorazepam 2mg/mL/Amp": 35
     },
     "SICU": {
         "Morphine HCl 10mg/1mL/Amp": 30,
         "Meperidine(Pethidine) 50mg/mL/Amp": 25,
         "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Lorazepam 2mg/mL/Amp": 35
     },
     "7A": {
         "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
+        "Codeine phosphate 15mg/imL INJ": 5,
+        # "Lorazepam 2mg/mL/Amp": 35
     },
     "7B": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
+        # "Codeine phosphate 15mg/imL INJ": 20,
+        # "Lorazepam 2mg/mL/Amp": 35
     },
     "8A": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 40,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
+        # "Codeine phosphate 15mg/imL INJ": 20,
+        # "Lorazepam 2mg/mL/Amp": 35
     },
     "8B": {
         "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
+        # "Codeine phosphate 15mg/imL INJ": 20,
+        # "Lorazepam(針劑) 2mg/mL/Amp": 35
     },
     "9A": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
+        "Codeine phosphate 15mg/imL INJ": 5,
+        "Lorazepam 2mg/mL/Amp": 1
     },
     "9B": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 0,
+        "Codeine phosphate 15mg/imL INJ": 0,
+        "Lorazepam 2mg/mL/Amp": 0
+    },
+        "POR": {
+        "Morphine HCl 10mg/1mL/Amp": 10,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
+        "Fentanyl (0.05mg/mL) 2mL/Amp": 40,
+        "Midazolam 15mg/3mL/Amp": 2,
+        "Diazepam 10mg/2mL/Amp": 1
     }
 }
 
