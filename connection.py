@@ -263,21 +263,25 @@ def main():
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
+                levision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
 
                 # 添加標題和修訂日期
                 title_table_data = [
-                    [Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
+                    [Paragraph('查核時間:113年10月', levision_style), ''],
+                    ['',Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
                     ['', Paragraph('113.09.30 修訂', revision_style)]
                 ]
                 title_table = Table(title_table_data, colWidths=[page_height*0.8, page_height*0.2])  # 調整列寬比例
                 title_table.setStyle(TableStyle([
                     ('SPAN', (0, 0), (1, 0)),  # 合併第一行的兩個單元格
+                    ('ALIGN', (-1, -1), (-1, -1), 'LEFT'),# 將查核時間左對齊
                     ('ALIGN', (0, 0), (0, 0), 'CENTER'),  # 將標題置中
                     ('ALIGN', (1, 1), (1, 1), 'RIGHT'),  # 將修訂日期右對齊
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('LEFTPADDING', (1, 1), (1, 1), 10),# 為查核時間添加10單位的左側內邊距
                     ('LEFTPADDING', (0, 0), (-1, -1), 0),
                     ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-                    ('RIGHTPADDING', (1, 1), (1, 1), 10),  # 為修訂日期添加10單位的右側內邊距                    
+                    ('RIGHTPADDING', (1, 1), (1, 1), 10),  # 為修訂日期添加10單位的右側內邊距
                     ('TOPPADDING', (0, 0), (-1, -1), 0),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
                 ]))
