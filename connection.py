@@ -252,7 +252,7 @@ def main():
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 右對齊
 
-                # 創建標題表格
+                # 添加標題和修訂日期
                 title_table_data = [
                     [Paragraph('單位庫存1-4級管制藥品月查核表', title_style), Paragraph('113.09.30 修訂', revision_style)]
                 ]
