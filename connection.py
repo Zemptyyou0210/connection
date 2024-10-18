@@ -277,6 +277,7 @@ def main():
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                     ('LEFTPADDING', (0, 0), (-1, -1), 0),
                     ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                    ('RIGHTPADDING', (1, 1), (1, 1), 10),  # 為修訂日期添加10單位的右側內邊距                    
                     ('TOPPADDING', (0, 0), (-1, -1), 0),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
                 ]))
