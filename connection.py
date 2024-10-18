@@ -250,9 +250,22 @@ def main():
                 title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
+                revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 右對齊
 
-                # 添加標題
-                story.append(Paragraph('單位庫存1-4級管制藥品月查核表', title_style))
+                # 創建標題表格
+                title_table_data = [
+                    [Paragraph('單位庫存1-4級管制藥品月查核表', title_style), Paragraph('113.09.30 修訂', revision_style)]
+                ]
+                title_table = Table(title_table_data, colWidths=[page_height*0.8, page_height*0.2])
+                title_table.setStyle(TableStyle([
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                    ('TOPPADDING', (0, 0), (-1, -1), 0),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                ]))
+
+                story.append(title_table)
                 story.append(Spacer(1, 5*mm))
 
                 # 創建簽名圖片
@@ -263,8 +276,7 @@ def main():
                 # 準備表格數據
                 table_data = [
                     ['病房單位', 'DRUG', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '', '', '', ''],
-                    ['113.09.30 修訂', '', '', '', '', '', '', '', '', '', '', '', '']  # 新增修訂日期行
+                    ['', '', '', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '', '', '', '']
                 ]
 
                 # 添加藥品數據
@@ -294,7 +306,7 @@ def main():
                 # 設置表格樣式
                 table.setStyle(TableStyle([
                     ('FONT', (0, 0), (-1, -1), 'KaiU'),
-                    ('FONT', (1, 3), (1, -1), 'Calibri'),  # 修改起始行為3
+                    ('FONT', (1, 2), (1, -1), 'Calibri'),
                     ('FONTSIZE', (0, 0), (-1, -1), 9),
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
