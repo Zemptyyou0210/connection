@@ -262,15 +262,16 @@ def main():
                 title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
-                revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 右對齊
+                revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=1)  # 改為居中對齊
 
                 # 添加標題和修訂日期
                 title_table_data = [
                     [Paragraph('單位庫存1-4級管制藥品月查核表', title_style), Paragraph('113.09.30 修訂', revision_style)]
                 ]
-                title_table = Table(title_table_data, colWidths=[page_height*0.8, page_height*0.2])
+                title_table = Table(title_table_data, colWidths=[page_height*0.7, page_height*0.3])  # 調整列寬比例
                 title_table.setStyle(TableStyle([
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 將所有單元格設置為居中對齊
                     ('LEFTPADDING', (0, 0), (-1, -1), 0),
                     ('RIGHTPADDING', (0, 0), (-1, -1), 0),
                     ('TOPPADDING', (0, 0), (-1, -1), 0),
