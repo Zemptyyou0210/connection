@@ -285,7 +285,7 @@ def main():
                 ]))
 
                 story.append(title_table)
-                story.append(Spacer(1, 2*mm))  # 減少標題和表格之間的間距
+                story.append(Spacer(1, 5*mm))  # 減少標題和表格之間的間距
 
                 # 創建簽名圖片
                 img = ReportLabImage(BytesIO(img_byte_arr))
