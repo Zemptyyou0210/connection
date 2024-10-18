@@ -268,20 +268,20 @@ def main():
                 # 添加查核時間、標題和修訂日期
                 check_time = "查核時間：113.10"
                 title_table_data = [
-                    [Paragraph(check_time, chinese_style), 
-                     Paragraph('單位庫存1-4級管制藥品月查核表', title_style), 
-                     Paragraph('113.09.30 修訂', revision_style)]
+                    ['', Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
+                    [Paragraph(check_time, chinese_style), '', Paragraph('113.09.30 修訂', revision_style)]
                 ]
                 title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
                 title_table.setStyle(TableStyle([
-                    ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # 左對齊查核時間
-                    ('ALIGN', (1, 0), (1, 0), 'CENTER'), # 居中主標題
-                    ('ALIGN', (2, 0), (2, 0), 'RIGHT'),  # 右對齊修訂時間
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 所有單元格居中對齊
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                     ('LEFTPADDING', (0, 0), (-1, -1), 10),
                     ('RIGHTPADDING', (0, 0), (-1, -1), 10),
                     ('TOPPADDING', (0, 0), (-1, -1), 0),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                    ('SPAN', (1, 0), (1, 0)),  # 標題橫跨整行
+                    ('ALIGN', (0, 1), (0, 1), 'LEFT'),  # 查核時間左對齊
+                    ('ALIGN', (2, 1), (2, 1), 'RIGHT'),  # 修訂時間右對齊
                 ]))
 
                 story.append(title_table)
