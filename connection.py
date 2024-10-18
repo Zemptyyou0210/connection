@@ -265,23 +265,21 @@ def main():
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
                 
 
-                # 添加標題和修訂日期
+                # 添加查核時間、標題和修訂日期
+                check_time = "查核時間：113.10"
                 title_table_data = [
-                    [Paragraph('查核時間:113年10月', revision_style)],
-                    [Paragraph('單位庫存1-4級管制藥品月查核表', title_style)],
-                    [Paragraph('113.09.30 修訂', revision_style)]
+                    [Paragraph(check_time, chinese_style), 
+                     Paragraph('單位庫存1-4級管制藥品月查核表', title_style), 
+                     Paragraph('113.09.30 修訂', revision_style)]
                 ]
-                title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.8, page_height*0.2])  # 調整列寬比例
+                title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
                 title_table.setStyle(TableStyle([
-                    # ('SPAN', (0, 0), (1, 0)),  # 合併第一行的兩個單元格
-                    ('ALIGN', (1,0 ), (1, 0), 'LEFT'),# 將查核時間左對齊
-                    ('ALIGN', (0, 0), (0, 0), 'CENTER'),  # 將標題置中
-                    ('ALIGN', (1, 1), (1, 1), 'RIGHT'),  # 將修訂日期右對齊
+                    ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # 左對齊查核時間
+                    ('ALIGN', (1, 0), (1, 0), 'CENTER'), # 居中主標題
+                    ('ALIGN', (2, 0), (2, 0), 'RIGHT'),  # 右對齊修訂時間
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                    # ('LEFTPADDING', (1, 1), (1, 1), 10),# 為查核時間添加10單位的左側內邊距
-                    # ('LEFTPADDING', (0, 0), (-1, -1), 0),
-                    # ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-                    # ('RIGHTPADDING', (1, 1), (1, 1), 10),  # 為修訂日期添加10單位的右側內邊距
+                    ('LEFTPADDING', (0, 0), (-1, -1), 10),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 10),
                     ('TOPPADDING', (0, 0), (-1, -1), 0),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
                 ]))
