@@ -236,7 +236,7 @@ def main():
                     '查核藥師': pharmacist,
                     '備註': info['備註']
                 }
-                df = df.append(row, ignore_index=True)
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
             # 保存為 Excel 文件
             excel_buffer = io.BytesIO()
