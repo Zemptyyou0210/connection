@@ -218,20 +218,37 @@ def main():
             pdf_filename = f"{file_base_name}.pdf"
 
             # 創建 DataFrame
-            df = pd.DataFrame(data).T
+            df = pd.DataFrame(columns=['病房單位', 'DRUG', '常備量', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '日期', '單位主管', '查核藥師', '備註'])
             
-            # 添加查核藥師欄位
-            df["查核藥師"] = pharmacist
-
-            # 重新排序列
-            columns_order = COLUMNS + ["查核藥師"]
-            df = df[columns_order]
+            for drug, info in data.items():
+                row = {
+                    '病房單位': ward,
+                    'DRUG': drug,
+                    '常備量': WARD_DRUGS[ward][drug],
+                    '現貨': info['現貨'],
+                    '空瓶': info['空瓶'],
+                    '處方箋': info['處方箋'],
+                    'Exp>6M': info['EXP>6month'],
+                    '符合': 'V' if info['是否符合'] == 'Y' else '',
+                    '不符合': 'V' if info['是否符合'] == 'N' else '',
+                    '日期': selected_date.strftime("%Y/%m/%d"),
+                    '單位主管': '',  # 這裡留空，因為簽名會單獨放在另一個工作表
+                    '查核藥師': pharmacist,
+                    '備註': info['備註']
+                }
+                df = df.append(row, ignore_index=True)
 
             # 保存為 Excel 文件
             excel_buffer = io.BytesIO()
             with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name='藥品庫存查核', index=True)
+                df.to_excel(writer, sheet_name='藥品庫存查核', index=False)
                 
+                # 調整列寬
+                worksheet = writer.sheets['藥品庫存查核']
+                for idx, col in enumerate(df.columns):
+                    max_length = max(df[col].astype(str).map(len).max(), len(col))
+                    worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
+
                 # 將簽名保存為圖片
                 img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
                 img_byte_arr = io.BytesIO()
@@ -242,8 +259,6 @@ def main():
                 worksheet = writer.book.create_sheet('病房單位主管簽名')
                 img = XLImage(io.BytesIO(img_byte_arr))
                 worksheet.add_image(img, 'A1')
-            
-            excel_buffer.seek(0)
 
             # 生成 PDF 文件
             pdf_buffer = io.BytesIO()
