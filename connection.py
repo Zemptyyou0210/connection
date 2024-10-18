@@ -33,7 +33,7 @@ WARD_DRUGS = {
     "6A": {
         "Morphine HCl 10mg/1mL/Amp": 20,
         "Meperidine(Pethidine) 50mg/mL/Amp": 3,
-        "Codeine phosphate 15mg/imL INJ": 5,
+        "Codeine phosphate 15mg/imL INJ": 3,
         # "Lorazepam 2mg/mL/Amp": 35
     },
     "MICU": {
@@ -74,15 +74,15 @@ WARD_DRUGS = {
     },
     "9A": {
         "Morphine HCl 10mg/1mL/Amp": 20,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
         "Codeine phosphate 15mg/imL INJ": 5,
         "Lorazepam 2mg/mL/Amp": 1
     },
     "9B": {
         "Morphine HCl 10mg/1mL/Amp": 20,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 0,
-        "Codeine phosphate 15mg/imL INJ": 0,
-        "Lorazepam 2mg/mL/Amp": 0
+        # "Meperidine(Pethidine) 50mg/mL/Amp": 0,
+        # "Codeine phosphate 15mg/imL INJ": 0,
+        # "Lorazepam 2mg/mL/Amp": 0
     },
         "POR": {
         "Morphine HCl 10mg/1mL/Amp": 10,
@@ -262,16 +262,19 @@ def main():
                 title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
-                revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=1)  # 改為居中對齊
+                revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
 
                 # 添加標題和修訂日期
                 title_table_data = [
-                    [Paragraph('單位庫存1-4級管制藥品月查核表', title_style), Paragraph('113.09.30 修訂', revision_style)]
+                    [Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
+                    ['', Paragraph('113.09.30 修訂', revision_style)]
                 ]
-                title_table = Table(title_table_data, colWidths=[page_height*0.7, page_height*0.3])  # 調整列寬比例
+                title_table = Table(title_table_data, colWidths=[page_height*0.8, page_height*0.2])  # 調整列寬比例
                 title_table.setStyle(TableStyle([
+                    ('SPAN', (0, 0), (1, 0)),  # 合併第一行的兩個單元格
+                    ('ALIGN', (0, 0), (0, 0), 'CENTER'),  # 將標題置中
+                    ('ALIGN', (1, 1), (1, 1), 'RIGHT'),  # 將修訂日期右對齊
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 將所有單元格設置為居中對齊
                     ('LEFTPADDING', (0, 0), (-1, -1), 0),
                     ('RIGHTPADDING', (0, 0), (-1, -1), 0),
                     ('TOPPADDING', (0, 0), (-1, -1), 0),
@@ -279,7 +282,7 @@ def main():
                 ]))
 
                 story.append(title_table)
-                story.append(Spacer(1, 5*mm))
+                story.append(Spacer(1, 2*mm))  # 減少標題和表格之間的間距
 
                 # 創建簽名圖片
                 img = ReportLabImage(BytesIO(img_byte_arr))
