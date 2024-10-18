@@ -100,11 +100,16 @@ COLUMNS = ["現貨", "空瓶", "處方箋", "EXP>6month", "是否符合", "備�
 PHARMACISTS = ["", "廖文佑", "洪英哲"]
 
 # 設置 Google Drive API 認證
-creds = service_account.Credentials.from_service_account_info(
-    st.secrets["google_drive_credentials"],
-    scopes=['https://www.googleapis.com/auth/drive.file']
-)
-drive_service = build('drive', 'v3', credentials=creds)
+try:
+    creds = service_account.Credentials.from_service_account_info(
+        st.secrets["google_drive_credentials"],
+        scopes=['https://www.googleapis.com/auth/drive.file']
+    )
+    drive_service = build('drive', 'v3', credentials=creds)
+    st.write("Debug: Google Drive API 認證成功設置")
+except Exception as e:
+    st.error(f"設置 Google Drive API 認證時發生錯誤: {str(e)}")
+    st.exception(e)
 
 def upload_to_drive(file_name, mime_type, file_content):
     folder_id = st.secrets["google_drive"]["folder_id"]
@@ -194,7 +199,14 @@ def main():
     pdf_buffer = None
 
     if st.button("提交", key="submit_button_unique_key"):
-        if canvas_result.image_data is not None and pharmacist:
+        st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
+        st.write(f"Debug: pharmacist: {pharmacist}")
+        
+        if canvas_result.image_data is None:
+            st.error("請在畫布上簽名")
+        elif not pharmacist:
+            st.error("請選擇查核藥師")
+        elif canvas_result.image_data is not None and pharmacist:
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
             
@@ -322,12 +334,18 @@ def main():
                 doc.build(story)
                 pdf_buffer.seek(0)
 
+                st.write(f"Debug: excel_filename = {excel_filename}")
+                st.write(f"Debug: pdf_filename = {pdf_filename}")
+                st.write(f"Debug: excel_buffer is None: {excel_buffer is None}")
+                st.write(f"Debug: pdf_buffer is None: {pdf_buffer is None}")
+
             except Exception as e:
                 st.error(f"生成 PDF 時發生錯誤: {str(e)}")
                 st.exception(e)
 
         # 在上傳文件之前檢查所有必要的變量是否已定義
         if excel_filename and pdf_filename and excel_buffer and pdf_buffer:
+            st.write("Debug: 所有必要的變量都已設置")
             try:
                 excel_file_id = upload_to_drive(excel_filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', excel_buffer)
                 if excel_file_id:
@@ -349,6 +367,10 @@ def main():
                 st.exception(e)
         else:
             st.error("無法上傳文件：部分必要資訊缺失")
+            st.write(f"Debug: excel_filename = {excel_filename}")
+            st.write(f"Debug: pdf_filename = {pdf_filename}")
+            st.write(f"Debug: excel_buffer is None: {excel_buffer is None}")
+            st.write(f"Debug: pdf_buffer is None: {pdf_buffer is None}")
 
 if __name__ == "__main__":
     main()
