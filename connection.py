@@ -30,74 +30,125 @@ logging.basicConfig(level=logging.INFO)
 
 # 定義不同病房的藥品列表和庫存限制
 WARD_DRUGS = {
+    "ER": {
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Lorazepam 2mg/mL/Amp": 5
+    },
+    "OR": {
+        "Morphine HCl 10mg/1mL/Amp": 20
+    },
+    "麻醉科": {
+        "MORPHINE20mg/1mL/Amp(PCA用)(5 amp/包)"":10,
+        "Morphine HCl 10mg/1mL/Amp":3,
+        "Meperidine(Pethidine) 50mg/mL/Amp":3,
+        "Fentanyl(0.05mg/mL) 2mL/Amp":400,
+        "Fentanyl inj 0.05mg/mL 10mL/Amp":110,
+        "Fentanyl inj 0.05mg/mL 10mL/Amp(PCA)(4 amp/包)":40,
+        "Alfentanil 0.5mg/mL 2mL/Amp":100,
+        #"Codeine phosphate 15mg/mL/Amp":,
+        "Ketamine 500mg/10mL/Vial":4,
+        #"Lorazepam 2mg/mL/Amp":,
+        #"Midazolam 15mg/3mL/Amp":,
+        "MIDazolam 五mg/mL/Amp":150,
+        "Thiamylal 300mg/Amp":11,
+        #"Diazepam 10mg/2mL/Amp":,
+        "Propofol 200mg/20mL/Amp":600,
+        "Etomidate 20mg/10mL/amp":15
+    },
+    
+   "內視鏡": {
+       "Fentanyl(0.05mg/mL) 2mL/Amp":30,
+       "MIDazolam 五mg/mL/Amp":30
+    },
+    
+   "胸腔科檢查室": {
+       "Meperidine(Pethidine) 50mg/mL/Amp":2,
+       "MIDazolam 五mg/mL/Amp":10
+    },
+    
+    "心導管": {
+        "Morphine HCl 10mg/1mL/Amp":5,
+        "Midazolam 15mg/3mL/Amp":5
+    },
+    
+    "POR": {"Morphine HCl 10mg/1mL/Amp":10,
+            "Meperidine(Pethidine) 50mg/mL/Amp":3,
+            "Fentanyl(0.05mg/mL) 2mL/Amp":40,
+            "Midazolam 15mg/3mL/Amp":2,
+            "Diazepam 10mg/2mL/Amp":1
+    },
+
     "6A": {
         "Morphine HCl 10mg/1mL/Amp": 20,
         "Meperidine(Pethidine) 50mg/mL/Amp": 3,
         "Codeine phosphate 15mg/imL INJ": 3,
         # "Lorazepam 2mg/mL/Amp": 35
     },
+    
+       
+    "6A": {
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
+        "Codeine phosphate 15mg/imL INJ": 3,
+   
+    },
     "MICU": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Fentanyl inj 0.05mg/mL 10mL/Amp":60,
+        "Lorazepam 2mg/mL/Amp": 2,
+        "Propofol 200mg/20mL/Amp":20
+        
     },
     "SICU": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 25,
-        "Codeine phosphate 15mg/imL INJ": 20,
-        "Lorazepam 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
+        "Fentanyl inj 0.05mg/mL 10mL/Amp":20,
+        "Codeine phosphate 15mg/imL INJ": 5,
+        "Lorazepam 2mg/mL/Amp": 2, 
+        "Midazolam 15mg/3mL/Amp":2,
+        "Propofol 200mg/20mL/Amp":10
     },
     "7A": {
         "Morphine HCl 10mg/1mL/Amp": 30,
         "Meperidine(Pethidine) 50mg/mL/Amp": 3,
         "Codeine phosphate 15mg/imL INJ": 5,
-        # "Lorazepam 2mg/mL/Amp": 35
+
     },
     "7B": {
         "Morphine HCl 10mg/1mL/Amp": 20,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
-        # "Codeine phosphate 15mg/imL INJ": 20,
-        # "Lorazepam 2mg/mL/Amp": 35
+        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
+
     },
     "8A": {
         "Morphine HCl 10mg/1mL/Amp": 40,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
-        # "Codeine phosphate 15mg/imL INJ": 20,
-        # "Lorazepam 2mg/mL/Amp": 35
+        "Meperidine(Pethidine) 50mg/mL/Amp": 2,
+
     },
     "8B": {
-        "Morphine HCl 10mg/1mL/Amp": 30,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 5,
-        # "Codeine phosphate 15mg/imL INJ": 20,
-        # "Lorazepam(針劑) 2mg/mL/Amp": 35
+        "Morphine HCl 10mg/1mL/Amp": 20,
+
+
     },
     "9A": {
         "Morphine HCl 10mg/1mL/Amp": 20,
         "Meperidine(Pethidine) 50mg/mL/Amp": 3,
-        "Codeine phosphate 15mg/imL INJ": 5,
+        "Codeine phosphate 15mg/imL INJ": 4,
         "Lorazepam 2mg/mL/Amp": 1
     },
     "9B": {
-        "Morphine HCl 10mg/1mL/Amp": 20,
-        # "Meperidine(Pethidine) 50mg/mL/Amp": 0,
-        # "Codeine phosphate 15mg/imL INJ": 0,
-        # "Lorazepam 2mg/mL/Amp": 0
-    },
-        "POR": {
-        "Morphine HCl 10mg/1mL/Amp": 10,
-        "Meperidine(Pethidine) 50mg/mL/Amp": 3,
-        "Fentanyl (0.05mg/mL) 2mL/Amp": 40,
-        "Midazolam 15mg/3mL/Amp": 2,
-        "Diazepam 10mg/2mL/Amp": 1
+        "Morphine HCl 10mg/1mL/Amp": 15,
+
     }
+       
 }
 
 # 定義列名
 COLUMNS = ["現貨", "空瓶", "處方箋", "EXP>6month", "是否符合", "備註"]
 
 # 定義查核藥師列表
-PHARMACISTS = ["", "廖文佑", "洪英哲"]
+PHARMACISTS =['', '廖文佑', '洪英哲', '楊曜嘉', '劉芷妘', '郭莉萱','蔡尚憲','鍾向渝', '吳雨柔', '侯佳旻', '蘇宜萱', '王孝軒', '王奕祺', '周芷伊', '簡妙格', '陳威如', 
+               '邱柏翰', '紀晨雲', '吳振凌', '羅志軒', '王威智', '劉川葆', '江廷昌','凃惠敏', '張淑娟', 
+               '李典則', '熊麗婷', '許家誠', '盧柏融', '劉奕君', '張雯婷', '張亦汝', '陳意涵','林坤瑝', '蔡文子','王奕祺', '邱柏翰',] 
 
 # 設置 Google Drive API 認證
 try:
@@ -281,7 +332,7 @@ def main():
                 
 
                 # 添加查核時間、標題和修訂日期
-                check_time = selected_date.strftime("%Y/%m/%d")
+                check_time ="查核時間 : "+ selected_date.strftime("%Y/%m/%d")
                 title_table_data = [
                     ['', Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
                     [Paragraph(check_time, chinese_style), '', Paragraph('114.02.27 更新', revision_style)]
