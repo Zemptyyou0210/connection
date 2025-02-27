@@ -38,7 +38,7 @@ WARD_DRUGS = {
         "Morphine HCl 10mg/1mL/Amp": 20
     },
     "麻醉科": {
-        "MORPHINE20mg/1mL/Amp(PCA用)(5 amp/包)"":10,
+        "MORPHINE20mg/1mL/Amp(PCA用)(5 amp/包)":10,
         "Morphine HCl 10mg/1mL/Amp":3,
         "Meperidine(Pethidine) 50mg/mL/Amp":3,
         "Fentanyl(0.05mg/mL) 2mL/Amp":400,
