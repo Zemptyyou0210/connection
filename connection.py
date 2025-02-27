@@ -281,10 +281,10 @@ def main():
                 
 
                 # 添加查核時間、標題和修訂日期
-                check_time = "查核時間：113.10"
+                check_time = selected_date.strftime("%Y/%m/%d")
                 title_table_data = [
                     ['', Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
-                    [Paragraph(check_time, chinese_style), '', Paragraph('113.09.30 修訂', revision_style)]
+                    [Paragraph(check_time, chinese_style), '', Paragraph('114.02.27 更新', revision_style)]
                 ]
                 title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
                 title_table.setStyle(TableStyle([
