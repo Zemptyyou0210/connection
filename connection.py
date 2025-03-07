@@ -356,9 +356,9 @@ def main():
                                 
 
                 # 添加查核時間、標題和修訂日期
-                check_time = Paragraph("查核時間 : " + selected_date.strftime("%Y/%m/%d"), title_style)  # 查核時間
+                check_time = Paragraph("查核時間 : " + selected_date.strftime("%Y/%m/%d"), revision_style)  # 查核時間
                 report_title = Paragraph("<b>單位庫存 1-4 級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
-                update_time = Paragraph("更新時間 : " + selected_date.strftime("%Y/%m/%d"), title_style)
+                update_time = Paragraph("更新時間 : " + selected_date.strftime("%Y/%m/%d"), revision_style)
                 
                 # 建立標題表格內容
                 title_table_data = [
