@@ -381,7 +381,7 @@ def main():
                 # 添加藥品數據
                 for drug, info in data.items():
 
-                    expiry_paragraph = Paragraph(str(info['效期>6個月']), wrap_style)  # 讓「效期>6個月」自動換行
+                    expiry_paragraph = Paragraph(str(info.get('效期>6個月', 'N/A')), wrap_style) # 讓「效期>6個月」自動換行
                     stock_paragraph = Paragraph(str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']), wrap_style)  # 讓「常備量=線存量+空瓶(空瓶量=處方箋量)」自動換行
                     remark_paragraph = Paragraph(str(info['備註']), wrap_style)  # 讓「備註」自動換行
                     row = [
