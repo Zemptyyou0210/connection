@@ -143,7 +143,7 @@ WARD_DRUGS = {
 }
 
 # 定義列名
-COLUMNS = ["現貨", "空瓶", "處方箋", "EXP>6month", "是否符合", "備註"]
+COLUMNS = ["現貨", "空瓶", "處方箋", "效期>6個月", "是否符合", "備註"]
 
 # 定義查核藥師列表
 PHARMACISTS =['', '廖文佑', '洪英哲', '楊曜嘉', '劉芷妘', '郭莉萱','蔡尚憲','鍾向渝', '吳雨柔', '侯佳旻', '蘇宜萱', '王孝軒', '王奕祺', '周芷伊', '簡妙格', '陳威如', 
@@ -183,14 +183,21 @@ def create_drug_form(ward, drugs):
                     f"{col} ({drug})",
                     min_value=0,
                     max_value=limit,
-                    value=0,
+                    value=limit,
                     key=f"{drug}_{col}",
                     help=f"庫存限制: {limit}支"
                 )
                 if drug_data[col] > limit * 0.8:  # 如果庫存超過限制的80%，顯示警告
                     st.warning(f"注意：{drug}的庫存接近或超過限制（{limit}支）")
-            elif col in ["空瓶", "處方箋", "EXP>6month"]:
+            elif col in ["空瓶", "處方箋"]:
                 drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}")
+            elif col == "效期>6個月":
+                expiry_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
+                if expiry_status == "不符合":
+                    expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
+                    drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
+                else:
+                    drug_data[col] = "符合"
             elif col == "是否符合":
                 drug_data[col] = st.selectbox(f"{col} ({drug})", ["Y", "N"], key=f"{drug}_{col}")
             elif col == "備註":
@@ -269,7 +276,7 @@ def main():
             pdf_filename = f"{file_base_name}.pdf"
 
             # 創建 DataFrame
-            df = pd.DataFrame(columns=['病房單位', 'DRUG', '常備量', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '日期', '單位主管', '查核藥師', '備註'])
+            df = pd.DataFrame(columns=['病房單位', 'DRUG', '常備量', '現貨', '空瓶', '處方箋', '效期>6個月', '符合', '不符合', '日期', '單位主管', '查核藥師', '備註'])
             
             for drug, info in data.items():
                 row = {
@@ -279,7 +286,7 @@ def main():
                     '現貨': info['現貨'],
                     '空瓶': info['空瓶'],
                     '處方箋': info['處方箋'],
-                    'Exp>6M': info['EXP>6month'],
+                    '效期>6個月': info['效期>6個月'],
                     '符合': 'V' if info['是否符合'] == 'Y' else '',
                     '不符合': 'V' if info['是否符合'] == 'N' else '',
                     '日期': selected_date.strftime("%Y/%m/%d"),
@@ -361,7 +368,7 @@ def main():
                 # 準備表格數據
                 table_data = [
                     ['病房單位', 'DRUG', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現貨', '空瓶', '處方箋', 'Exp>6M', '符合', '不符合', '', '', '', '']
+                    ['', '', '', '現貨', '空瓶', '處方箋', '效期>6個月', '符合', '不符合', '', '', '', '']
                 ]
 
                 # 添加藥品數據
@@ -373,7 +380,7 @@ def main():
                         str(info['現貨']),
                         str(info['空瓶']),
                         str(info['處方箋']),
-                        str(info['EXP>6month']),
+                        str(info['效期>6個月']),
                         'V' if info['是否符合'] == 'Y' else '',
                         'V' if info['是否符合'] == 'N' else '',
                         selected_date.strftime("%Y/%m/%d"),
