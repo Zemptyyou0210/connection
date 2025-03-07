@@ -205,7 +205,7 @@ def create_drug_form(ward, drugs):
                     drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
                 else:
                     drug_data[col] = "符合"
-                        elif col == "備註":
+            elif col == "備註":
                 drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
         data[drug] = drug_data
     return data
