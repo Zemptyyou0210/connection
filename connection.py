@@ -394,7 +394,7 @@ def main():
                         expiry_paragraph,  # 自動換行的「效期>6個月」
                         stock_paragraph,  # 自動換行的「常備量=線存量+空瓶(空瓶量=處方箋量)」
                         selected_date.strftime("%Y/%m/%d"),
-                        supervisor_paragraph,  # 自動換行的「單位主管」
+                        img,  # 自動換行的「單位主管」
                         pharmacist,
                         remark_paragraph  # 自動換行的「備註」
                     ]
@@ -416,11 +416,11 @@ def main():
                 
                     # 合併「查核內容」標題
                     ('SPAN', (3, 0), (7, 0)),
-                    
+                    ('SPAN', (9, 2), (9, -1)),
                     # 讓這些欄位內容自動換行
                     ('ALIGN', (6, 2), (6, -1), 'LEFT'),  # 效期>6個月
                     ('ALIGN', (7, 2), (7, -1), 'LEFT'),  # 常備量=線存量+空瓶(空瓶量=處方箋量)
-                    ('ALIGN', (9, 2), (9, -1), 'CENTER'),  # 單位主管
+                  
                     ('ALIGN', (11, 2), (11, -1), 'LEFT'),  # 備註
                 ]))
 
