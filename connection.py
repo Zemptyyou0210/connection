@@ -341,8 +341,13 @@ def main():
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
                 styles = getSampleStyleSheet()
-                vertical_style = styles["Normal"]  # 使用普通樣式
-                vertical_style.wordWrap = 'CJK'  # 支援中文換行
+                styles = getSampleStyleSheet()
+                english_style = styles["Normal"]  # 這是英文樣式
+                chinese_style = styles["Normal"]  # 中文樣式
+                wrap_style = styles["Normal"]
+                wrap_style.wordWrap = 'CJK'  # 支援中文自動換行
+                wrap_style.leading = 10  # 設定行距
+                
                 
 
                 # 添加查核時間、標題和修訂日期
@@ -391,7 +396,7 @@ def main():
                         str(info['現存量']),
                         str(info['空瓶']),
                         str(info['處方箋']),
-                        expiry_paragraph,  # 自動換行的「效期>6個月」
+                        # expiry_paragraph,  # 自動換行的「效期>6個月」
                         stock_paragraph,  # 自動換行的「常備量=線存量+空瓶(空瓶量=處方箋量)」
                         selected_date.strftime("%Y/%m/%d"),
                         img,  # 自動換行的「單位主管」
