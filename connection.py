@@ -368,7 +368,7 @@ def main():
                             '', '', '', ''
                         ]
                     ]
-                ]
+                
                 title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
                 title_table.setStyle(TableStyle([
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 所有單元格居中對齊
