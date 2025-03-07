@@ -340,10 +340,19 @@ def main():
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
-                styles = getSampleStyleSheet()
-                wrap_style = styles['Normal']  # 從預設的 'Normal' 樣式中獲取
-                wrap_style.wordWrap = 'CJK'  # 支援中文自動換行
-                wrap_style.leading = 10  # 設定行距
+
+                
+                # 為 chinese_style 添加換行功能
+                chinese_style.wordWrap = 'CJK'  # 支援中文自動換行
+                chinese_style.leading = 10  # 設定行距
+                
+                # 為 english_style 添加換行功能
+                english_style.wordWrap = 'CJK'  # 支援中文自動換行
+                english_style.leading = 10  # 設定行距
+                
+                # 為 revision_style 添加換行功能
+                revision_style.wordWrap = 'CJK'  # 支援中文自動換行
+                revision_style.leading = 10  # 設定行距
                                 
 
                 # 添加查核時間、標題和修訂日期
@@ -382,9 +391,9 @@ def main():
                 # 添加藥品數據
                 for drug, info in data.items():
 
-                    expiry_paragraph = Paragraph(str(info['效期>6個月'])) # 讓「效期>6個月」自動換行
-                    stock_paragraph = Paragraph(str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']))  # 讓「常備量=線存量+空瓶(空瓶量=處方箋量)」自動換行
-                    remark_paragraph = Paragraph(str(info['備註']), wrap_style)  # 讓「備註」自動換行
+                    expiry_paragraph = Paragraph(str(info['效期>6個月']),chinese_style) # 讓「效期>6個月」自動換行
+                    stock_paragraph = Paragraph(str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=線存量+空瓶(空瓶量=處方箋量)」自動換行
+                    remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
                     row = [
                         ward,
                         Paragraph(drug, wrap_style),  # 藥品名稱也可以自動換行
