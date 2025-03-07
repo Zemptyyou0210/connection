@@ -341,10 +341,10 @@ def main():
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
                 styles = getSampleStyleSheet()
+                wrap_style = styles['Normal']  # 從預設的 'Normal' 樣式中獲取
                 wrap_style.wordWrap = 'CJK'  # 支援中文自動換行
                 wrap_style.leading = 10  # 設定行距
-                
-                
+                                
 
                 # 添加查核時間、標題和修訂日期
                 check_time ="查核時間 : "+ selected_date.strftime("%Y/%m/%d")
