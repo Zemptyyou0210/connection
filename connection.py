@@ -357,19 +357,15 @@ def main():
 
                 # 添加查核時間、標題和修訂日期
                 check_time ="查核時間 : "+ selected_date.strftime("%Y/%m/%d")
+                report_title = Paragraph("<b>單位庫存 1-4 級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
+                update_time = "更新時間 : " + selected_date.strftime("%Y/%m/%d")  # 更新時間
                 
-                table_data = [
-                        ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                        [
-                            '', '', '', 
-                            '現存量', '空瓶', '處方箋', 
-                            Paragraph('常備量=線存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
-                            Paragraph('效期>6個月', small_title_style),  # 讓「效期>6個月」標題也變小字體
-                            '', '', '', ''
-                        ]
-                    ]
-                
-                title_table = Table(table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
+                # 建立標題表格內容
+                title_table_data = [
+                    [check_time, report_title, update_time]  # 左 中 右 佈局
+                ]
+                                
+                title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
                 title_table.setStyle(TableStyle([
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 所有單元格居中對齊
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -391,11 +387,23 @@ def main():
                 img.drawWidth = 30*mm
 
                 # 準備表格數據
-                table_data = [
-                    ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現存量', '空瓶', '處方箋', '常備量=線存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
-                ]
-
+                # table_data = [
+                #     ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
+                #     ['', '', '', '現存量', '空瓶', '處方箋', '常備量=線存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
+                # ]
+    
+                 table_data = [
+                            ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
+                            [
+                                '', '', '', 
+                                '現存量', '空瓶', '處方箋', 
+                                Paragraph('常備量=線存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
+                                Paragraph('效期>6個月', small_title_style),  # 讓「效期>6個月」標題也變小字體
+                                '', '', '', ''
+                            ]
+                        ]
+    
+                    
                 # 添加藥品數據
                 for drug, info in data.items():
 
