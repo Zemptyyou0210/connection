@@ -223,7 +223,7 @@ def main():
     selected_date = date_input_container.date_input(
         "選擇日期",
         today,
-        max_value=today,
+        # max_value=today,
         key="date_input_unique_key"
     )
 
