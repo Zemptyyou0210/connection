@@ -281,11 +281,11 @@ def main():
             pdf_filename = f"{file_base_name}.pdf"
 
             # 創建 DataFrame
-            df = pd.DataFrame(columns=['病房單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '日期', '單位主管', '查核藥師', '備註'])
+            df = pd.DataFrame(columns=['單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '日期', '單位主管', '查核藥師', '備註'])
             
             for drug, info in data.items():
                 row = {
-                    '病房單位': ward,
+                    '單位': ward,
                     '常備品項': drug,
                     '常備量': WARD_DRUGS[ward][drug],
                     '現存量': info['現存量'],
@@ -371,7 +371,7 @@ def main():
 
                 # 準備表格數據
                 table_data = [
-                    ['病房單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
+                    ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
                     ['', '', '', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '', '', '', '']
                 ]
 
@@ -394,7 +394,7 @@ def main():
                     table_data.append(row)
 
                 # 創建表格，調整列寬以適應 A4 橫向
-                available_width = page_height - 20*mm
+                available_width = page_height - 10*mm
                 col_widths = [10*mm, 45*mm, 10*mm, 10*mm, 10*mm, 10*mm, 44*mm, 45*mm, 20*mm, 30*mm, 20*mm, 23*mm]
                 table = Table(table_data, colWidths=col_widths)
 
@@ -406,8 +406,8 @@ def main():
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('SPAN', (10, 2), (10, -1)),
-                    ('SPAN', (10, 2), (10, -1)),  # 合併單位主管欄位
+                    ('SPAN', (3, 0), (7, 0)),
+                    ('SPAN', (9, 2), (9, -1)),  # 合併單位主管欄位
                     ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
                 ]))
 
