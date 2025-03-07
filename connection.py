@@ -395,7 +395,7 @@ def main():
 
                 # 創建表格，調整列寬以適應 A4 橫向
                 available_width = page_height - 20*mm
-                col_widths = [25*mm, 50*mm, 15*mm, 15*mm, 15*mm, 15*mm, 19*mm, 20*mm, 20*mm, 30*mm, 20*mm, 33*mm]
+                col_widths = [10*mm, 45*mm, 10*mm, 10*mm, 10*mm, 10*mm, 44*mm, 45*mm, 20*mm, 30*mm, 20*mm, 23*mm]
                 table = Table(table_data, colWidths=col_widths)
 
                 # 設置表格樣式
