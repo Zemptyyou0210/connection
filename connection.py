@@ -380,21 +380,25 @@ def main():
 
                 # 添加藥品數據
                 for drug, info in data.items():
-                    row = [
-                        ward,
-                        Paragraph(drug, english_style),
-                        str(WARD_DRUGS[ward][drug]),
-                        str(info['現存量']),
-                        str(info['空瓶']),
-                        str(info['處方箋']),
-                        str(info['效期>6個月']),
-                        str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']),
-                        selected_date.strftime("%Y/%m/%d"),
-                        img,
-                        pharmacist,
-                        Paragraph(info['備註'], chinese_style)
-                    ]
-                    table_data.append(row)
+                    supervisor_paragraph = Paragraph(img, wrap_style)  # 讓「單位主管」自動換行
+                    expiry_paragraph = Paragraph(str(info['效期>6個月']), wrap_style)  # 讓「效期>6個月」自動換行
+                    stock_paragraph = Paragraph(str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']), wrap_style)  # 讓「常備量=線存量+空瓶(空瓶量=處方箋量)」自動換行
+                    remark_paragraph = Paragraph(str(info['備註']), wrap_style)  # 讓「備註」自動換行
+                        row = [
+                                ward,
+                                Paragraph(drug, wrap_style),  # 藥品名稱也可以自動換行
+                                str(WARD_DRUGS[ward][drug]),
+                                str(info['現存量']),
+                                str(info['空瓶']),
+                                str(info['處方箋']),
+                                expiry_paragraph,  # 自動換行的「效期>6個月」
+                                stock_paragraph,  # 自動換行的「常備量=線存量+空瓶(空瓶量=處方箋量)」
+                                selected_date.strftime("%Y/%m/%d"),
+                                supervisor_paragraph,  # 自動換行的「單位主管」
+                                pharmacist,
+                                remark_paragraph  # 自動換行的「備註」
+                            ]
+                            table_data.append(row)
 
                 # 創建表格，調整列寬以適應 A4 橫向
                 available_width = page_height - 10*mm
@@ -404,14 +408,20 @@ def main():
                 # 設置表格樣式
                 table.setStyle(TableStyle([
                     ('FONT', (0, 0), (-1, -1), 'KaiU'),
-                    ('FONT', (1, 2), (1, -1), 'Calibri'),
                     ('FONTSIZE', (0, 0), (-1, -1), 9),
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('SPAN', (3, 0), (7, 0)),
-                    ('SPAN', (9, 2), (9, -1)),  # 合併單位主管欄位
                     ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
+                
+                    # 合併「查核內容」標題
+                    ('SPAN', (3, 0), (7, 0)),
+                    
+                    # 讓這些欄位內容自動換行
+                    ('ALIGN', (6, 2), (6, -1), 'LEFT'),  # 效期>6個月
+                    ('ALIGN', (7, 2), (7, -1), 'LEFT'),  # 常備量=線存量+空瓶(空瓶量=處方箋量)
+                    ('ALIGN', (9, 2), (9, -1), 'CENTER'),  # 單位主管
+                    ('ALIGN', (11, 2), (11, -1), 'LEFT'),  # 備註
                 ]))
 
                 story.append(table)
