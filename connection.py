@@ -406,7 +406,7 @@ def main():
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                     ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('SPAN', (3, 0), (8, 0)),
+                    ('SPAN', (10, 2), (10, -1)),
                     ('SPAN', (10, 2), (10, -1)),  # 合併單位主管欄位
                     ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
                 ]))
