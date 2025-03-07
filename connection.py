@@ -143,7 +143,7 @@ WARD_DRUGS = {
 }
 
 # 定義列名
-COLUMNS = ["現貨", "空瓶", "處方箋", "效期>6個月", "是否符合", "備註"]
+COLUMNS = ["現存量", "空瓶", "處方箋", "效期>6個月", "常備量=線存量+空瓶(空瓶量=處方箋量)", "備註"]
 
 # 定義查核藥師列表
 PHARMACISTS =['', '廖文佑', '洪英哲', '楊曜嘉', '劉芷妘', '郭莉萱','蔡尚憲','鍾向渝', '吳雨柔', '侯佳旻', '蘇宜萱', '王孝軒', '王奕祺', '周芷伊', '簡妙格', '陳威如', 
@@ -178,7 +178,7 @@ def create_drug_form(ward, drugs):
         st.subheader(drug)
         drug_data = {}
         for col in COLUMNS:
-            if col == "現貨":
+            if col == "現存貨":
                 drug_data[col] = st.number_input(
                     f"{col} ({drug})",
                     min_value=0,
@@ -198,9 +198,14 @@ def create_drug_form(ward, drugs):
                     drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
                 else:
                     drug_data[col] = "符合"
-            elif col == "是否符合":
-                drug_data[col] = st.selectbox(f"{col} ({drug})", ["Y", "N"], key=f"{drug}_{col}")
-            elif col == "備註":
+            elif col == "常備量=線存量+空瓶(空瓶量=處方箋量)":
+                stock_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
+                if stock_status == "不符合":
+                    stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
+                    drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
+                else:
+                    drug_data[col] = "符合"
+                        elif col == "備註":
                 drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
         data[drug] = drug_data
     return data
@@ -276,19 +281,18 @@ def main():
             pdf_filename = f"{file_base_name}.pdf"
 
             # 創建 DataFrame
-            df = pd.DataFrame(columns=['病房單位', 'DRUG', '常備量', '現貨', '空瓶', '處方箋', '效期>6個月', '符合', '不符合', '日期', '單位主管', '查核藥師', '備註'])
+            df = pd.DataFrame(columns=['病房單位', '常備品項', '常備量', '現存貨', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '日期', '單位主管', '查核藥師', '備註'])
             
             for drug, info in data.items():
                 row = {
                     '病房單位': ward,
-                    'DRUG': drug,
+                    '常備品項': drug,
                     '常備量': WARD_DRUGS[ward][drug],
-                    '現貨': info['現貨'],
+                    '現存貨': info['現存貨'],
                     '空瓶': info['空瓶'],
                     '處方箋': info['處方箋'],
                     '效期>6個月': info['效期>6個月'],
-                    '符合': 'V' if info['是否符合'] == 'Y' else '',
-                    '不符合': 'V' if info['是否符合'] == 'N' else '',
+                    '常備量=線存量+空瓶(空瓶量=處方箋量)': info['常備量=線存量+空瓶(空瓶量=處方箋量)'],
                     '日期': selected_date.strftime("%Y/%m/%d"),
                     '單位主管': '',  # 這裡留空，因為簽名會單獨放在另一個工作表
                     '查核藥師': pharmacist,
@@ -367,8 +371,8 @@ def main():
 
                 # 準備表格數據
                 table_data = [
-                    ['病房單位', 'DRUG', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現貨', '空瓶', '處方箋', '效期>6個月', '符合', '不符合', '', '', '', '']
+                    ['病房單位', '常備品項', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
+                    ['', '', '', '現存貨', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '', '', '', '']
                 ]
 
                 # 添加藥品數據
@@ -377,12 +381,11 @@ def main():
                         ward,
                         Paragraph(drug, english_style),
                         str(WARD_DRUGS[ward][drug]),
-                        str(info['現貨']),
+                        str(info['現存貨']),
                         str(info['空瓶']),
                         str(info['處方箋']),
                         str(info['效期>6個月']),
-                        'V' if info['是否符合'] == 'Y' else '',
-                        'V' if info['是否符合'] == 'N' else '',
+                        str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']),
                         selected_date.strftime("%Y/%m/%d"),
                         img,
                         pharmacist,
@@ -392,7 +395,7 @@ def main():
 
                 # 創建表格，調整列寬以適應 A4 橫向
                 available_width = page_height - 20*mm
-                col_widths = [25*mm, 50*mm, 15*mm, 15*mm, 15*mm, 15*mm, 15*mm, 12*mm, 12*mm, 20*mm, 30*mm, 20*mm, 33*mm]
+                col_widths = [25*mm, 50*mm, 15*mm, 15*mm, 15*mm, 15*mm, 19*mm, 20*mm, 20*mm, 30*mm, 20*mm, 33*mm]
                 table = Table(table_data, colWidths=col_widths)
 
                 # 設置表格樣式
