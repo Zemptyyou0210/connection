@@ -396,7 +396,7 @@ def main():
                     remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
                     row = [
                         ward,
-                        Paragraph(drug, wrap_style),  # 藥品名稱也可以自動換行
+                        Paragraph(drug, chinese_style),  # 藥品名稱也可以自動換行
                         str(WARD_DRUGS[ward][drug]),
                         str(info['現存量']),
                         str(info['空瓶']),
