@@ -11,7 +11,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as ReportLabImage
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle, Paragraph
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.utils import ImageReader
@@ -340,6 +340,9 @@ def main():
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
+                styles = getSampleStyleSheet()
+                vertical_style = styles["Normal"]  # 使用普通樣式
+                vertical_style.wordWrap = 'CJK'  # 支援中文換行
                 
 
                 # 添加查核時間、標題和修訂日期
@@ -372,7 +375,7 @@ def main():
                 # 準備表格數據
                 table_data = [
                     ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '', '', '', '']
+                    ['', '', '', '現存量', '空瓶', '處方箋', '常備量=線存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
                 ]
 
                 # 添加藥品數據
@@ -395,7 +398,7 @@ def main():
 
                 # 創建表格，調整列寬以適應 A4 橫向
                 available_width = page_height - 10*mm
-                col_widths = [10*mm, 45*mm, 10*mm, 10*mm, 10*mm, 10*mm, 44*mm, 45*mm, 20*mm, 30*mm, 20*mm, 23*mm]
+                col_widths = [10*mm, 45*mm, 10*mm, 10*mm, 10*mm, 10*mm, 49*mm, 40*mm, 20*mm, 30*mm, 20*mm, 23*mm]
                 table = Table(table_data, colWidths=col_widths)
 
                 # 設置表格樣式
