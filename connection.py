@@ -340,7 +340,7 @@ def main():
                 chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
-
+                small_title_style = ParagraphStyle('SmallTitle', fontName='KaiU', fontSize=7, leading=9, alignment=1)
                 
                 # 為 chinese_style 添加換行功能
                 chinese_style.wordWrap = 'CJK'  # 支援中文自動換行
@@ -357,9 +357,17 @@ def main():
 
                 # 添加查核時間、標題和修訂日期
                 check_time ="查核時間 : "+ selected_date.strftime("%Y/%m/%d")
-                title_table_data = [
-                    ['', Paragraph('單位庫存1-4級管制藥品月查核表', title_style), ''],
-                    [Paragraph(check_time, chinese_style), '', Paragraph('114.02.27 更新', revision_style)]
+                
+                table_data = [
+                        ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
+                        [
+                            '', '', '', 
+                            '現存量', '空瓶', '處方箋', 
+                            Paragraph('常備量=線存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
+                            Paragraph('效期>6個月', small_title_style),  # 讓「效期>6個月」標題也變小字體
+                            '', '', '', ''
+                        ]
+                    ]
                 ]
                 title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
                 title_table.setStyle(TableStyle([
