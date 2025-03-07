@@ -178,7 +178,7 @@ def create_drug_form(ward, drugs):
         st.subheader(drug)
         drug_data = {}
         for col in COLUMNS:
-            if col == "現存貨":
+            if col == "現存量":
                 drug_data[col] = st.number_input(
                     f"{col} ({drug})",
                     min_value=0,
@@ -281,14 +281,14 @@ def main():
             pdf_filename = f"{file_base_name}.pdf"
 
             # 創建 DataFrame
-            df = pd.DataFrame(columns=['病房單位', '常備品項', '常備量', '現存貨', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '日期', '單位主管', '查核藥師', '備註'])
+            df = pd.DataFrame(columns=['病房單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '日期', '單位主管', '查核藥師', '備註'])
             
             for drug, info in data.items():
                 row = {
                     '病房單位': ward,
                     '常備品項': drug,
                     '常備量': WARD_DRUGS[ward][drug],
-                    '現存貨': info['現存貨'],
+                    '現存量': info['現存量'],
                     '空瓶': info['空瓶'],
                     '處方箋': info['處方箋'],
                     '效期>6個月': info['效期>6個月'],
@@ -372,7 +372,7 @@ def main():
                 # 準備表格數據
                 table_data = [
                     ['病房單位', '常備品項', '常備量', '查核內容', '', '', '', '', '', '日期', '單位主管', '查核藥師', '備註'],
-                    ['', '', '', '現存貨', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '', '', '', '']
+                    ['', '', '', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '', '', '', '']
                 ]
 
                 # 添加藥品數據
@@ -381,7 +381,7 @@ def main():
                         ward,
                         Paragraph(drug, english_style),
                         str(WARD_DRUGS[ward][drug]),
-                        str(info['現存貨']),
+                        str(info['現存量']),
                         str(info['空瓶']),
                         str(info['處方箋']),
                         str(info['效期>6個月']),
