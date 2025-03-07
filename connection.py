@@ -341,7 +341,6 @@ def main():
                 english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
                 revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
                 styles = getSampleStyleSheet()
-                styles = getSampleStyleSheet()
                 wrap_style.wordWrap = 'CJK'  # 支援中文自動換行
                 wrap_style.leading = 10  # 設定行距
                 
