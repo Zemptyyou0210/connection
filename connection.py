@@ -143,7 +143,7 @@ WARD_DRUGS = {
 }
 
 # 定義列名
-COLUMNS = ["現存量", "空瓶", "處方箋", "效期>6個月", "常備量=線存量+空瓶(空瓶量=處方箋量)", "備註"]
+COLUMNS = ["現存量", "空瓶", "處方箋", "效期>6個月", "常備量=現存量+空瓶(空瓶量=處方箋量)", "備註"]
 
 # 定義查核藥師列表
 PHARMACISTS =['', '廖文佑', '洪英哲', '楊曜嘉', '劉芷妘', '郭莉萱','蔡尚憲','鍾向渝', '吳雨柔', '侯佳旻', '蘇宜萱', '王孝軒', '王奕祺', '周芷伊', '簡妙格', '陳威如', 
@@ -198,7 +198,7 @@ def create_drug_form(ward, drugs):
                     drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
                 else:
                     drug_data[col] = "符合"
-            elif col == "常備量=線存量+空瓶(空瓶量=處方箋量)":
+            elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
                 stock_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
                 if stock_status == "不符合":
                     stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
@@ -281,7 +281,7 @@ def main():
             pdf_filename = f"{file_base_name}.pdf"
 
             # 創建 DataFrame
-            df = pd.DataFrame(columns=['單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=線存量+空瓶(空瓶量=處方箋量)', '日期', '被查核單位主管', '查核藥師', '備註'])
+            df = pd.DataFrame(columns=['單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=現存量+空瓶(空瓶量=處方箋量)', '日期', '被查核單位主管', '查核藥師', '備註'])
             
             for drug, info in data.items():
                 row = {
@@ -292,7 +292,7 @@ def main():
                     '空瓶': info['空瓶'],
                     '處方箋': info['處方箋'],
                     '效期>6個月': info['效期>6個月'],
-                    '常備量=線存量+空瓶(空瓶量=處方箋量)': info['常備量=線存量+空瓶(空瓶量=處方箋量)'],
+                    '常備量=現存量+空瓶(空瓶量=處方箋量)': info['常備量=現存量+空瓶(空瓶量=處方箋量)'],
                     '日期': selected_date.strftime("%Y/%m/%d"),
                     '被查核單位主管': '',  # 這裡留空，因為簽名會單獨放在另一個工作表
                     '查核藥師': pharmacist,
@@ -389,7 +389,7 @@ def main():
                 # 準備表格數據
                 # table_data = [
                 #     ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '被查核單位主管', '查核藥師', '備註'],
-                #     ['', '', '', '現存量', '空瓶', '處方箋', '常備量=線存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
+                #     ['', '', '', '現存量', '空瓶', '處方箋', '常備量=現存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
                 # ]
     
                 table_data = [
@@ -397,7 +397,7 @@ def main():
                             [
                                 '', '', '', 
                                 '現存量', '空瓶', '處方箋', 
-                                Paragraph('常備量=線存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
+                                Paragraph('常備量=現存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
                                 Paragraph('效期>6個月', small_title_style),  # 讓「效期>6個月」標題也變小字體
                                 '', '', '', ''
                             ]
@@ -408,7 +408,7 @@ def main():
                 for drug, info in data.items():
 
                     expiry_paragraph = Paragraph(str(info['效期>6個月']),chinese_style) # 讓「效期>6個月」自動換行
-                    stock_paragraph = Paragraph(str(info['常備量=線存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=線存量+空瓶(空瓶量=處方箋量)」自動換行
+                    stock_paragraph = Paragraph(str(info['常備量=現存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=現存量+空瓶(空瓶量=處方箋量)」自動換行
                     remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
                     row = [
                         ward,
@@ -418,7 +418,7 @@ def main():
                         str(info['空瓶']),
                         str(info['處方箋']),
                         expiry_paragraph,  # 自動換行的「效期>6個月」
-                        stock_paragraph,  # 自動換行的「常備量=線存量+空瓶(空瓶量=處方箋量)」
+                        stock_paragraph,  # 自動換行的「常備量=現存量+空瓶(空瓶量=處方箋量)」
                         selected_date.strftime("%Y/%m/%d"),
                         img,  # 自動換行的「被查核單位主管」
                         pharmacist,
@@ -454,7 +454,7 @@ def main():
                     ('SPAN', (11, 0), (11, 1)),
                     # 讓這些欄位內容自動換行
                     ('ALIGN', (6, 2), (6, -1), 'LEFT'),  # 效期>6個月
-                    ('ALIGN', (7, 2), (7, -1), 'LEFT'),  # 常備量=線存量+空瓶(空瓶量=處方箋量)
+                    ('ALIGN', (7, 2), (7, -1), 'LEFT'),  # 常備量=現存量+空瓶(空瓶量=處方箋量)
                   
                     ('ALIGN', (11, 2), (11, -1), 'LEFT'),  # 備註
                 ]))
