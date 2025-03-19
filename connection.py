@@ -410,8 +410,9 @@ def main():
                     expiry_paragraph = Paragraph(str(info['效期>6個月']),chinese_style) # 讓「效期>6個月」自動換行
                     stock_paragraph = Paragraph(str(info['常備量=現存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=現存量+空瓶(空瓶量=處方箋量)」自動換行
                     remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
+                    ward_paragraph = Paragraph(str(info['單位']), chinese_style)  # 讓「單位」自動換行
                     row = [
-                        ward,
+                        ward_paragraph, # 自動換行的「單位」
                         Paragraph(drug, chinese_style),  # 藥品名稱也可以自動換行
                         str(WARD_DRUGS[ward][drug]),
                         str(info['現存量']),
