@@ -175,10 +175,11 @@ def upload_to_drive(file_name, mime_type, file_content):
 def create_drug_form(ward, drugs):
     data = {}
     incomplete_drugs = []
-    reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
+   
     for drug, limit in drugs.items():
         with st.expander(drug):
             drug_data = {}
+            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
             complete = True 
             for col in COLUMNS:
                 if col == "現存量":
