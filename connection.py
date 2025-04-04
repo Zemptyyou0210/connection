@@ -175,6 +175,7 @@ def upload_to_drive(file_name, mime_type, file_content):
 def create_drug_form(ward, drugs):
     data = {}
     incomplete_drugs = []
+    reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
     for drug, limit in drugs.items():
         with st.expander(drug):
             drug_data = {}
@@ -199,9 +200,14 @@ def create_drug_form(ward, drugs):
                         auto_value = max(limit - drug_data.get("現存量", 0), 0)
                         st.markdown(f"✅ 自動計算結果：**{auto_value}**")
                         drug_data[col] = auto_value
+
                     else:
                         # 讓使用者輸入數字
-                        drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")    
+                        drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")
+                    drug_data["已完成查核"] = reviewed
+                    data[drug] = drug_data
+
+                
                 elif col == "效期>6個月":
                     expiry_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                     if expiry_status == "不符合":
@@ -216,6 +222,8 @@ def create_drug_form(ward, drugs):
                     if not complete:
                         incomplete_drugs.append(drug)
             
+                    data[drug] = drug_data
+                    drug_data["已完成查核"] = reviewed
                     data[drug] = drug_data
                     st.markdown("---")
 
@@ -235,6 +243,8 @@ def create_drug_form(ward, drugs):
                         incomplete_drugs.append(drug)
             
                     data[drug] = drug_data
+                    drug_data["已完成查核"] = reviewed
+                    data[drug] = drug_data                    
                     st.markdown("---")
 
                 elif col == "備註":
