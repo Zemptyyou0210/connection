@@ -310,261 +310,261 @@ def main():
         st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
         st.write(f"Debug: pharmacist: {pharmacist}")
 
-    # ✅【1】檢查畫布是否有簽名
-    if canvas_result.image_data is None:
-        st.error("請在畫布上簽名")
-
-
-    # ✅【2】檢查是否選擇了藥師
-    elif not pharmacist:
-        st.error("請選擇查核藥師")
-
-
-    # ✅【3】檢查是否有未填寫的藥品資料
-    elif canvas_result.image_data is not None and pharmacist:
-        # 檢查是否有未填寫的藥品資料
-        if incomplete_drugs:
-            st.warning(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
-            st.stop()  # 停止繼續執行，強制要求填寫完整資料
-        else:
-            # 如果所有資料填寫完整，顯示成功信息
-            st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
-            st.write(data)  # 顯示提交的數據（如果需要）
-
-        # 使用選擇的日期
-        file_date = selected_date.strftime("%Y.%m.%d")
+        # ✅【1】檢查畫布是否有簽名
+        if canvas_result.image_data is None:
+            st.error("請在畫布上簽名")
+    
+    
+        # ✅【2】檢查是否選擇了藥師
+        elif not pharmacist:
+            st.error("請選擇查核藥師")
+    
+    
+        # ✅【3】檢查是否有未填寫的藥品資料
+        elif canvas_result.image_data is not None and pharmacist:
+            # 檢查是否有未填寫的藥品資料
+            if incomplete_drugs:
+                st.warning(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
+                st.stop()  # 停止繼續執行，強制要求填寫完整資料
+            else:
+                # 如果所有資料填寫完整，顯示成功信息
+                st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
+                st.write(data)  # 顯示提交的數據（如果需要）
         
-        # 創建文件名（不包含副檔名）
-        file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
+            # 使用選擇的日期
+            file_date = selected_date.strftime("%Y.%m.%d")
+            
+            # 創建文件名（不包含副檔名）
+            file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
+            
+            # 創建 Excel 和 PDF 文件名
+            excel_filename = f"{file_base_name}.xlsx"
+            pdf_filename = f"{file_base_name}.pdf"
         
-        # 創建 Excel 和 PDF 文件名
-        excel_filename = f"{file_base_name}.xlsx"
-        pdf_filename = f"{file_base_name}.pdf"
-
-        # 創建 DataFrame
-        df = pd.DataFrame(columns=['單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=現存量+空瓶(空瓶量=處方箋量)', '日期', '被查核單位主管', '查核藥師', '備註'])
-        
-        for drug, info in data.items():
-            row = {
-                '單位': ward,
-                '常備品項': drug,
-                '常備量': WARD_DRUGS[ward][drug],
-                '現存量': info['現存量'],
-                '空瓶': info['空瓶'],
-                '處方箋': info['處方箋'],
-                '效期>6個月': info['效期>6個月'],
-                '常備量=現存量+空瓶(空瓶量=處方箋量)': info['常備量=現存量+空瓶(空瓶量=處方箋量)'],
-                '日期': selected_date.strftime("%Y/%m/%d"),
-                '被查核單位主管': '',  # 這裡留空，因為簽名會單獨放在另一個工作表
-                '查核藥師': pharmacist,
-                '備註': info['備註']
-            }
-            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-
-        # 保存為 Excel 文件
-        excel_buffer = io.BytesIO()
-        with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name='藥品庫存查核', index=False)
+            # 創建 DataFrame
+            df = pd.DataFrame(columns=['單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=現存量+空瓶(空瓶量=處方箋量)', '日期', '被查核單位主管', '查核藥師', '備註'])
             
-            # 調整列寬
-            worksheet = writer.sheets['藥品庫存查核']
-            for idx, col in enumerate(df.columns):
-                max_length = max(df[col].astype(str).map(len).max(), len(col))
-                worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
-
-            # 將簽名保存為圖片
-            img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
-            img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format='PNG')
-            img_byte_arr = img_byte_arr.getvalue()
-            
-            # 將簽名圖片添加到新的工作表
-            worksheet = writer.book.create_sheet('被查核單位主管簽名')
-            img = XLImage(io.BytesIO(img_byte_arr))
-            worksheet.add_image(img, 'A1')
-
-        # 生成 PDF 文件
-        pdf_buffer = io.BytesIO()
-        try:
-            # 創建 PDF 文檔，使用 A4 橫向
-            page_width, page_height = A4
-            doc = SimpleDocTemplate(pdf_buffer, pagesize=(page_height, page_width), leftMargin=10*mm, rightMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
-            story = []
-            styles = getSampleStyleSheet()
-
-            # 註冊字體
-            pdfmetrics.registerFont(TTFont('KaiU', 'fonts/kaiu.ttf'))  # 標楷體
-            pdfmetrics.registerFont(TTFont('Calibri', 'fonts/calibri.ttf'))    # Calibri
-
-            # 創建包含中文字體的樣式
-            title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
-            chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
-            english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
-            revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
-            small_title_style = ParagraphStyle('SmallTitle', fontName='KaiU', fontSize=7, leading=9, alignment=1)
-            
-            # 為 chinese_style 添加換行功能
-            chinese_style.wordWrap = 'CJK'  # 支援中文自動換行
-            chinese_style.leading = 10  # 設定行距
-            
-            # 為 english_style 添加換行功能
-            english_style.wordWrap = 'CJK'  # 支援中文自動換行
-            english_style.leading = 10  # 設定行距
-            
-            # 為 revision_style 添加換行功能
-            revision_style.wordWrap = 'CJK'  # 支援中文自動換行
-            revision_style.leading = 10  # 設定行距
-                            
-
-            # 添加查核時間、標題和修訂日期
-            check_time = Paragraph("查核時間 : " + selected_date.strftime("%Y/%m/%d"), revision_style)  # 查核時間
-            report_title = Paragraph("<b>單位庫存 1-4 級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
-            update_time = Paragraph("更新時間 : 2025.03.26", revision_style)
-
-            
-            # 建立標題表格內容
-            title_table_data = [
-                [check_time, report_title, update_time]  # 左 中 右 佈局
-            ]
-                            
-            title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
-            title_table.setStyle(TableStyle([
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 所有單元格居中對齊
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('LEFTPADDING', (0, 0), (-1, -1), 10),
-                ('RIGHTPADDING', (0, 0), (-1, -1), 10),
-                ('TOPPADDING', (0, 0), (-1, -1), 0),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
-                ('SPAN', (1, 0), (1, 0)),  # 標題橫跨整行
-                ('ALIGN', (0, 1), (0, 1), 'LEFT'),  # 查核時間左對齊
-                ('ALIGN', (2, 1), (2, 1), 'RIGHT'),  # 修訂時間右對齊
-            ]))
-
-            story.append(title_table)
-            story.append(Spacer(1, 5*mm))  # 減少標題和表格之間的間距
-
-            # 創建簽名圖片
-            img = ReportLabImage(BytesIO(img_byte_arr))
-            img.drawHeight = 15*mm
-            img.drawWidth = 30*mm
-
-            # 準備表格數據
-            # table_data = [
-            #     ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '被查核單位主管', '查核藥師', '備註'],
-            #     ['', '', '', '現存量', '空瓶', '處方箋', '常備量=現存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
-            # ]
-
-            table_data = [
-                        ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '被查核單位主管', '查核藥師', '備註'],
-                        [
-                            '', '', '', 
-                            '現存量', '空瓶', '處方箋', 
-                            Paragraph('常備量=現存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
-                            Paragraph('效期>6個月', small_title_style),  # 讓「效期>6個月」標題也變小字體
-                            '', '', '', ''
-                        ]
-                            ]        
-
-                
-            # 添加藥品數據
             for drug, info in data.items():
-
-                expiry_paragraph = Paragraph(str(info['效期>6個月']),chinese_style) # 讓「效期>6個月」自動換行
-                stock_paragraph = Paragraph(str(info['常備量=現存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=現存量+空瓶(空瓶量=處方箋量)」自動換行
-                remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
-                ward_paragraph = Paragraph(str(ward), chinese_style)  # 讓「單位」自動換行
-                row = [
-                    ward_paragraph, # 自動換行的「單位」
-                    Paragraph(drug, chinese_style),  # 藥品名稱也可以自動換行
-                    str(WARD_DRUGS[ward][drug]),
-                    str(info['現存量']),
-                    str(info['空瓶']),
-                    str(info['處方箋']),
-                    expiry_paragraph,  # 自動換行的「效期>6個月」
-                    stock_paragraph,  # 自動換行的「常備量=現存量+空瓶(空瓶量=處方箋量)」
-                    selected_date.strftime("%Y/%m/%d"),
-                    img,  # 自動換行的「被查核單位主管」
-                    pharmacist,
-                    remark_paragraph  # 自動換行的「備註」
+                row = {
+                    '單位': ward,
+                    '常備品項': drug,
+                    '常備量': WARD_DRUGS[ward][drug],
+                    '現存量': info['現存量'],
+                    '空瓶': info['空瓶'],
+                    '處方箋': info['處方箋'],
+                    '效期>6個月': info['效期>6個月'],
+                    '常備量=現存量+空瓶(空瓶量=處方箋量)': info['常備量=現存量+空瓶(空瓶量=處方箋量)'],
+                    '日期': selected_date.strftime("%Y/%m/%d"),
+                    '被查核單位主管': '',  # 這裡留空，因為簽名會單獨放在另一個工作表
+                    '查核藥師': pharmacist,
+                    '備註': info['備註']
+                }
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        
+            # 保存為 Excel 文件
+            excel_buffer = io.BytesIO()
+            with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name='藥品庫存查核', index=False)
+                
+                # 調整列寬
+                worksheet = writer.sheets['藥品庫存查核']
+                for idx, col in enumerate(df.columns):
+                    max_length = max(df[col].astype(str).map(len).max(), len(col))
+                    worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
+        
+                # 將簽名保存為圖片
+                img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
+                img_byte_arr = io.BytesIO()
+                img.save(img_byte_arr, format='PNG')
+                img_byte_arr = img_byte_arr.getvalue()
+                
+                # 將簽名圖片添加到新的工作表
+                worksheet = writer.book.create_sheet('被查核單位主管簽名')
+                img = XLImage(io.BytesIO(img_byte_arr))
+                worksheet.add_image(img, 'A1')
+        
+            # 生成 PDF 文件
+            pdf_buffer = io.BytesIO()
+            try:
+                # 創建 PDF 文檔，使用 A4 橫向
+                page_width, page_height = A4
+                doc = SimpleDocTemplate(pdf_buffer, pagesize=(page_height, page_width), leftMargin=10*mm, rightMargin=10*mm, topMargin=10*mm, bottomMargin=10*mm)
+                story = []
+                styles = getSampleStyleSheet()
+        
+                # 註冊字體
+                pdfmetrics.registerFont(TTFont('KaiU', 'fonts/kaiu.ttf'))  # 標楷體
+                pdfmetrics.registerFont(TTFont('Calibri', 'fonts/calibri.ttf'))    # Calibri
+        
+                # 創建包含中文字體的樣式
+                title_style = ParagraphStyle('TitleStyle', fontName='KaiU', fontSize=16, alignment=1)
+                chinese_style = ParagraphStyle('ChineseStyle', fontName='KaiU', fontSize=9)
+                english_style = ParagraphStyle('EnglishStyle', fontName='Calibri', fontSize=9)
+                revision_style = ParagraphStyle('RevisionStyle', fontName='KaiU', fontSize=9, alignment=2)  # 改回右對齊
+                small_title_style = ParagraphStyle('SmallTitle', fontName='KaiU', fontSize=7, leading=9, alignment=1)
+                
+                # 為 chinese_style 添加換行功能
+                chinese_style.wordWrap = 'CJK'  # 支援中文自動換行
+                chinese_style.leading = 10  # 設定行距
+                
+                # 為 english_style 添加換行功能
+                english_style.wordWrap = 'CJK'  # 支援中文自動換行
+                english_style.leading = 10  # 設定行距
+                
+                # 為 revision_style 添加換行功能
+                revision_style.wordWrap = 'CJK'  # 支援中文自動換行
+                revision_style.leading = 10  # 設定行距
+                                
+        
+                # 添加查核時間、標題和修訂日期
+                check_time = Paragraph("查核時間 : " + selected_date.strftime("%Y/%m/%d"), revision_style)  # 查核時間
+                report_title = Paragraph("<b>單位庫存 1-4 級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
+                update_time = Paragraph("更新時間 : 2025.03.26", revision_style)
+        
+                
+                # 建立標題表格內容
+                title_table_data = [
+                    [check_time, report_title, update_time]  # 左 中 右 佈局
                 ]
-                table_data.append(row)
-
-            # 創建表格，調整列寬以適應 A4 橫向
-            available_width = page_height - 10*mm
-            col_widths = [10*mm, 45*mm, 10*mm, 10*mm, 10*mm, 10*mm, 49*mm, 40*mm, 20*mm, 30*mm, 20*mm, 23*mm]
-            table = Table(table_data, colWidths=col_widths)
-
-            # 設置表格樣式
-            table.setStyle(TableStyle([
-                ('FONT', (0, 0), (-1, -1), 'KaiU'),
-                ('FONTSIZE', (0, 0), (-1, -1), 9),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
-            
-                # 合併「查核內容」標題
-                ('SPAN', (3, 0), (7, 0)),
-                ('SPAN', (9, 2), (9, -1)),
-                ('SPAN', (0, 2), (0, -1)),
-                 # 合併「單位, 常備品項, 常備量」標題
-                ('SPAN', (0, 0), (0, 1)),
-                ('SPAN', (1, 0), (1, 1)),
-                ('SPAN', (2, 0), (2, 1)),
-                ('SPAN', (8, 0), (8, 1)),
-                ('SPAN', (9, 0), (9, 1)),
-                ('SPAN', (10, 0), (10, 1)),
-                ('SPAN', (11, 0), (11, 1)),
-                # 讓這些欄位內容自動換行
-                ('ALIGN', (6, 2), (6, -1), 'LEFT'),  # 效期>6個月
-                ('ALIGN', (7, 2), (7, -1), 'LEFT'),  # 常備量=現存量+空瓶(空瓶量=處方箋量)
-                ('ALIGN', (0, 2), (0, -1), 'LEFT'),  # 單位
-                ('ALIGN', (11, 2), (11, -1), 'LEFT'),  # 備註
-            ]))
-
-            story.append(table)
-
-            # 生成 PDF
-            doc.build(story)
-            pdf_buffer.seek(0)
-
+                                
+                title_table = Table(title_table_data, colWidths=[page_height*0.2, page_height*0.6, page_height*0.2])
+                title_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # 所有單元格居中對齊
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 10),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+                    ('TOPPADDING', (0, 0), (-1, -1), 0),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                    ('SPAN', (1, 0), (1, 0)),  # 標題橫跨整行
+                    ('ALIGN', (0, 1), (0, 1), 'LEFT'),  # 查核時間左對齊
+                    ('ALIGN', (2, 1), (2, 1), 'RIGHT'),  # 修訂時間右對齊
+                ]))
+        
+                story.append(title_table)
+                story.append(Spacer(1, 5*mm))  # 減少標題和表格之間的間距
+        
+                # 創建簽名圖片
+                img = ReportLabImage(BytesIO(img_byte_arr))
+                img.drawHeight = 15*mm
+                img.drawWidth = 30*mm
+        
+                # 準備表格數據
+                # table_data = [
+                #     ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '被查核單位主管', '查核藥師', '備註'],
+                #     ['', '', '', '現存量', '空瓶', '處方箋', '常備量=現存量+空瓶(空瓶量=處方箋量)', '效期>6個月', '', '', '', '']
+                # ]
+        
+                table_data = [
+                            ['單位', '常備品項', '常備量', '查核內容', '', '', '', '', '日期', '被查核單位主管', '查核藥師', '備註'],
+                            [
+                                '', '', '', 
+                                '現存量', '空瓶', '處方箋', 
+                                Paragraph('常備量=現存量+空瓶(空瓶量=處方箋量)', small_title_style),  # 使用小字體樣式
+                                Paragraph('效期>6個月', small_title_style),  # 讓「效期>6個月」標題也變小字體
+                                '', '', '', ''
+                            ]
+                                ]        
+        
+                    
+                # 添加藥品數據
+                for drug, info in data.items():
+        
+                    expiry_paragraph = Paragraph(str(info['效期>6個月']),chinese_style) # 讓「效期>6個月」自動換行
+                    stock_paragraph = Paragraph(str(info['常備量=現存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=現存量+空瓶(空瓶量=處方箋量)」自動換行
+                    remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
+                    ward_paragraph = Paragraph(str(ward), chinese_style)  # 讓「單位」自動換行
+                    row = [
+                        ward_paragraph, # 自動換行的「單位」
+                        Paragraph(drug, chinese_style),  # 藥品名稱也可以自動換行
+                        str(WARD_DRUGS[ward][drug]),
+                        str(info['現存量']),
+                        str(info['空瓶']),
+                        str(info['處方箋']),
+                        expiry_paragraph,  # 自動換行的「效期>6個月」
+                        stock_paragraph,  # 自動換行的「常備量=現存量+空瓶(空瓶量=處方箋量)」
+                        selected_date.strftime("%Y/%m/%d"),
+                        img,  # 自動換行的「被查核單位主管」
+                        pharmacist,
+                        remark_paragraph  # 自動換行的「備註」
+                    ]
+                    table_data.append(row)
+        
+                # 創建表格，調整列寬以適應 A4 橫向
+                available_width = page_height - 10*mm
+                col_widths = [10*mm, 45*mm, 10*mm, 10*mm, 10*mm, 10*mm, 49*mm, 40*mm, 20*mm, 30*mm, 20*mm, 23*mm]
+                table = Table(table_data, colWidths=col_widths)
+        
+                # 設置表格樣式
+                table.setStyle(TableStyle([
+                    ('FONT', (0, 0), (-1, -1), 'KaiU'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 9),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('BACKGROUND', (0, 0), (-1, 1), colors.lightgrey),
+                
+                    # 合併「查核內容」標題
+                    ('SPAN', (3, 0), (7, 0)),
+                    ('SPAN', (9, 2), (9, -1)),
+                    ('SPAN', (0, 2), (0, -1)),
+                     # 合併「單位, 常備品項, 常備量」標題
+                    ('SPAN', (0, 0), (0, 1)),
+                    ('SPAN', (1, 0), (1, 1)),
+                    ('SPAN', (2, 0), (2, 1)),
+                    ('SPAN', (8, 0), (8, 1)),
+                    ('SPAN', (9, 0), (9, 1)),
+                    ('SPAN', (10, 0), (10, 1)),
+                    ('SPAN', (11, 0), (11, 1)),
+                    # 讓這些欄位內容自動換行
+                    ('ALIGN', (6, 2), (6, -1), 'LEFT'),  # 效期>6個月
+                    ('ALIGN', (7, 2), (7, -1), 'LEFT'),  # 常備量=現存量+空瓶(空瓶量=處方箋量)
+                    ('ALIGN', (0, 2), (0, -1), 'LEFT'),  # 單位
+                    ('ALIGN', (11, 2), (11, -1), 'LEFT'),  # 備註
+                ]))
+        
+                story.append(table)
+        
+                # 生成 PDF
+                doc.build(story)
+                pdf_buffer.seek(0)
+        
+                st.write(f"Debug: excel_filename = {excel_filename}")
+                st.write(f"Debug: pdf_filename = {pdf_filename}")
+                st.write(f"Debug: excel_buffer is None: {excel_buffer is None}")
+                st.write(f"Debug: pdf_buffer is None: {pdf_buffer is None}")
+        
+            except Exception as e:
+                st.error(f"生成 PDF 時發生錯誤: {str(e)}")
+                st.exception(e)
+        
+        # 在上傳文件之前檢查所有必要的變量是否已定義
+        if excel_filename and pdf_filename and excel_buffer and pdf_buffer:
+            st.write("Debug: 所有必要的變量都已設置")
+            try:
+                excel_file_id = upload_to_drive(excel_filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', excel_buffer)
+                if excel_file_id:
+                    st.success(f"Excel 文件已上傳，ID: {excel_file_id}")
+                    excel_url = f"https://drive.google.com/file/d/{excel_file_id}/view"
+                    st.markdown(f"[點擊此處查看 Excel 文件]({excel_url})")
+                else:
+                    st.error("Excel 文件上傳失敗")
+        
+                pdf_file_id = upload_to_drive(pdf_filename, 'application/pdf', pdf_buffer)
+                if pdf_file_id:
+                    st.success(f"PDF 文件已上傳，ID: {pdf_file_id}")
+                    pdf_url = f"https://drive.google.com/file/d/{pdf_file_id}/view"
+                    st.markdown(f"[點擊此處查看 PDF 文件]({pdf_url})")
+                else:
+                    st.error("PDF 文件上傳失敗")
+            except Exception as e:
+                st.error(f"上傳文件失敗: {str(e)}")
+                st.exception(e)
+        else:
+            st.error("無法上傳文件：部分必要資訊缺失")
             st.write(f"Debug: excel_filename = {excel_filename}")
             st.write(f"Debug: pdf_filename = {pdf_filename}")
             st.write(f"Debug: excel_buffer is None: {excel_buffer is None}")
             st.write(f"Debug: pdf_buffer is None: {pdf_buffer is None}")
-
-        except Exception as e:
-            st.error(f"生成 PDF 時發生錯誤: {str(e)}")
-            st.exception(e)
-
-    # 在上傳文件之前檢查所有必要的變量是否已定義
-    if excel_filename and pdf_filename and excel_buffer and pdf_buffer:
-        st.write("Debug: 所有必要的變量都已設置")
-        try:
-            excel_file_id = upload_to_drive(excel_filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', excel_buffer)
-            if excel_file_id:
-                st.success(f"Excel 文件已上傳，ID: {excel_file_id}")
-                excel_url = f"https://drive.google.com/file/d/{excel_file_id}/view"
-                st.markdown(f"[點擊此處查看 Excel 文件]({excel_url})")
-            else:
-                st.error("Excel 文件上傳失敗")
-
-            pdf_file_id = upload_to_drive(pdf_filename, 'application/pdf', pdf_buffer)
-            if pdf_file_id:
-                st.success(f"PDF 文件已上傳，ID: {pdf_file_id}")
-                pdf_url = f"https://drive.google.com/file/d/{pdf_file_id}/view"
-                st.markdown(f"[點擊此處查看 PDF 文件]({pdf_url})")
-            else:
-                st.error("PDF 文件上傳失敗")
-        except Exception as e:
-            st.error(f"上傳文件失敗: {str(e)}")
-            st.exception(e)
-    else:
-        st.error("無法上傳文件：部分必要資訊缺失")
-        st.write(f"Debug: excel_filename = {excel_filename}")
-        st.write(f"Debug: pdf_filename = {pdf_filename}")
-        st.write(f"Debug: excel_buffer is None: {excel_buffer is None}")
-        st.write(f"Debug: pdf_buffer is None: {pdf_buffer is None}")
 
 if __name__ == "__main__":
     main()
