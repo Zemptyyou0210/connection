@@ -175,7 +175,7 @@ def upload_to_drive(file_name, mime_type, file_content):
 def create_drug_form(ward, drugs):
     data = {}
     for drug, limit in drugs.items():
-        st.subheader(drug)
+        with st.expander(drug):
         drug_data = {}
         for col in COLUMNS:
             if col == "現存量":
@@ -201,7 +201,7 @@ def create_drug_form(ward, drugs):
                     # 讓使用者輸入數字
                     drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")    
             elif col == "效期>6個月":
-                expiry_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
+                expiry_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                 if expiry_status == "不符合":
                     expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                     drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
