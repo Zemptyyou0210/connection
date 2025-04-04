@@ -217,7 +217,7 @@ def create_drug_form(ward, drugs):
                         incomplete_drugs.append(drug)
             
                     data[drug] = drug_data
-     st.markdown("---")
+                st.markdown("---")
 
                 elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
                     stock_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
@@ -235,7 +235,7 @@ def create_drug_form(ward, drugs):
                         incomplete_drugs.append(drug)
             
                     data[drug] = drug_data
-     st.markdown("---")
+                st.markdown("---")
 
 
                 elif col == "備註":
