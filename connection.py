@@ -274,7 +274,7 @@ def main():
     drugs = WARD_DRUGS[ward]
 
     # 創建藥品表單
-    data = create_drug_form(ward, drugs)
+    data, incomplete_drugs = create_drug_form(ward, drugs)
 
     # 添加查核藥師下拉選單
     pharmacist = st.selectbox("查核藥師", PHARMACISTS, help="請選擇查核藥師")
