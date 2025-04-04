@@ -194,8 +194,8 @@ def create_drug_form(ward, drugs):
                     if drug_data[col] > limit * 0.8:  # 如果庫存超過限制的80%，顯示警告
                         st.warning(f"注意：{drug}的庫存接近或超過限制（{limit}支）")
                 elif col in ["空瓶", "處方箋"]:
-                    # 是否符合預設條件
-                    status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
+                    # 是否符合
+                    status = st.radio(f"{col} 是否符合 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                     if status == "符合":
                         # 自動計算 = 庫存上限 - 現存量
                         auto_value = max(limit - drug_data.get("現存量", 0), 0)
@@ -210,7 +210,7 @@ def create_drug_form(ward, drugs):
 
                 
                 elif col == "效期>6個月":
-                    expiry_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
+                    expiry_status = st.radio(f"{col} 是否符合 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                     if expiry_status == "不符合":
                         expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                         drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
@@ -222,7 +222,7 @@ def create_drug_form(ward, drugs):
                     st.markdown("---")
 
                 elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
-                    stock_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
+                    stock_status = st.radio(f"{col} 是否符合 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                     if stock_status == "不符合":
                         stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                         drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
