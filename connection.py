@@ -233,6 +233,10 @@ def create_drug_form(ward, drugs):
                         
                     else:
                         drug_data[col] = "符合"
+
+                elif col == "備註":
+                    drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
+                    
                 if any(val == "" or val is None for val in drug_data.values()):
                         complete = False
                 if not complete:
@@ -243,8 +247,6 @@ def create_drug_form(ward, drugs):
                 data[drug] = drug_data                    
                 st.markdown("---")
 
-                elif col == "備註":
-                    drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
                 
             data[drug] = drug_data
     return data
