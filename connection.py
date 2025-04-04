@@ -313,6 +313,8 @@ def main():
         # ✅【1】檢查畫布是否有簽名
         if canvas_result.image_data is None:
             st.error("請在畫布上簽名")
+        else:
+            st.success("畫布已簽名！") 
 
     
         # ✅【2】檢查是否選擇了藥師
