@@ -176,47 +176,47 @@ def create_drug_form(ward, drugs):
     data = {}
     for drug, limit in drugs.items():
         with st.expander(drug):
-        drug_data = {}
-        for col in COLUMNS:
-            if col == "現存量":
-                drug_data[col] = st.number_input(
-                    f"{col} ({drug})",
-                    min_value=0,
-                    max_value=limit,
-                    value=limit,
-                    key=f"{drug}_{col}",
-                    help=f"庫存限制: {limit}支"
-                )
-                if drug_data[col] > limit * 0.8:  # 如果庫存超過限制的80%，顯示警告
-                    st.warning(f"注意：{drug}的庫存接近或超過限制（{limit}支）")
-            elif col in ["空瓶", "處方箋"]:
-                # 是否符合預設條件
-                status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
-                if status == "符合":
-                    # 自動計算 = 庫存上限 - 現存量
-                    auto_value = max(limit - drug_data.get("現存量", 0), 0)
-                    st.markdown(f"✅ 自動計算結果：**{auto_value}**")
-                    drug_data[col] = auto_value
-                else:
-                    # 讓使用者輸入數字
-                    drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")    
-            elif col == "效期>6個月":
-                expiry_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
-                if expiry_status == "不符合":
-                    expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
-                    drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
-                else:
-                    drug_data[col] = "符合"
-            elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
-                stock_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
-                if stock_status == "不符合":
-                    stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
-                    drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
-                else:
-                    drug_data[col] = "符合"
-            elif col == "備註":
-                drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
-        data[drug] = drug_data
+            drug_data = {}
+            for col in COLUMNS:
+                if col == "現存量":
+                    drug_data[col] = st.number_input(
+                        f"{col} ({drug})",
+                        min_value=0,
+                        max_value=limit,
+                        value=limit,
+                        key=f"{drug}_{col}",
+                        help=f"庫存限制: {limit}支"
+                    )
+                    if drug_data[col] > limit * 0.8:  # 如果庫存超過限制的80%，顯示警告
+                        st.warning(f"注意：{drug}的庫存接近或超過限制（{limit}支）")
+                elif col in ["空瓶", "處方箋"]:
+                    # 是否符合預設條件
+                    status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
+                    if status == "符合":
+                        # 自動計算 = 庫存上限 - 現存量
+                        auto_value = max(limit - drug_data.get("現存量", 0), 0)
+                        st.markdown(f"✅ 自動計算結果：**{auto_value}**")
+                        drug_data[col] = auto_value
+                    else:
+                        # 讓使用者輸入數字
+                        drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")    
+                elif col == "效期>6個月":
+                    expiry_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
+                    if expiry_status == "不符合":
+                        expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
+                        drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
+                    else:
+                        drug_data[col] = "符合"
+                elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
+                    stock_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
+                    if stock_status == "不符合":
+                        stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
+                        drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
+                    else:
+                        drug_data[col] = "符合"
+                elif col == "備註":
+                    drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
+            data[drug] = drug_data
     return data
 
 def main():
