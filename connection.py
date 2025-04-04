@@ -214,18 +214,13 @@ def create_drug_form(ward, drugs):
                     if expiry_status == "不符合":
                         expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                         drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
-                        if not reason:
+                        if not expiry_reason:
                             complete = False
                     else:
                         drug_data[col] = "符合"
-                    if any(val == "" or val is None for val in drug_data.values()):
-                        complete = False
-                    if not complete:
-                        incomplete_drugs.append(drug)
             
                     data[drug] = drug_data
                     drug_data["已完成查核"] = reviewed
-                    data[drug] = drug_data
                     st.markdown("---")
 
                 elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
@@ -233,20 +228,20 @@ def create_drug_form(ward, drugs):
                     if stock_status == "不符合":
                         stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                         drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
-                        if not reason:
+                        if not stock_reason:
                             complete = False
                         
                     else:
                         drug_data[col] = "符合"
-                    if any(val == "" or val is None for val in drug_data.values()):
+                if any(val == "" or val is None for val in drug_data.values()):
                         complete = False
-                    if not complete:
-                        incomplete_drugs.append(drug)
+                if not complete:
+                    incomplete_drugs.append(drug)
             
-                    data[drug] = drug_data
-                    drug_data["已完成查核"] = reviewed
-                    data[drug] = drug_data                    
-                    st.markdown("---")
+                data[drug] = drug_data
+                drug_data["已完成查核"] = reviewed
+                data[drug] = drug_data                    
+                st.markdown("---")
 
                 elif col == "備註":
                     drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
