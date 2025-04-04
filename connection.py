@@ -242,10 +242,10 @@ def create_drug_form(ward, drugs):
                 data[drug] = drug_data
                 st.markdown("---")
                     
-                reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
-                drug_data["已完成查核"] = reviewed
-            data[drug] = drug_data                    
-            st.markdown("---")
+        reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
+        drug_data["已完成查核"] = reviewed
+        data[drug] = drug_data                    
+        st.markdown("---")
 
                 
             data[drug] = drug_data
