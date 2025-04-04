@@ -204,8 +204,7 @@ def create_drug_form(ward, drugs):
                     else:
                         # 讓使用者輸入數字
                         drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")
-                    drug_data["已完成查核"] = reviewed
-                    data[drug] = drug_data
+
 
                 
                 elif col == "效期>6個月":
@@ -244,11 +243,11 @@ def create_drug_form(ward, drugs):
                     
             reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
             drug_data["已完成查核"] = reviewed
-        data[drug] = drug_data                    
-        st.markdown("---")
+            data[drug] = drug_data                    
+            st.markdown("---")
 
                 
-        data[drug] = drug_data
+
     return data, incomplete_drugs
 
 def main():
