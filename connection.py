@@ -248,7 +248,7 @@ def create_drug_form(ward, drugs):
         st.markdown("---")
 
                 
-            data[drug] = drug_data
+        data[drug] = drug_data
     return data, incomplete_drugs
 
 def main():
