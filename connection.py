@@ -179,8 +179,8 @@ def create_drug_form(ward, drugs):
     for drug, limit in drugs.items():
         with st.expander(drug):
             drug_data = {}
-            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
             complete = True 
+            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
             for col in COLUMNS:
                 if col == "現存量":
                     drug_data[col] = st.number_input(
@@ -193,6 +193,7 @@ def create_drug_form(ward, drugs):
                     )
                     if drug_data[col] > limit * 0.8:  # 如果庫存超過限制的80%，顯示警告
                         st.warning(f"注意：{drug}的庫存接近或超過限制（{limit}支）")
+                        
                 elif col in ["空瓶", "處方箋"]:
                     # 是否符合
                     status = st.radio(f"{col} 是否符合 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
@@ -201,7 +202,6 @@ def create_drug_form(ward, drugs):
                         auto_value = max(limit - drug_data.get("現存量", 0), 0)
                         st.markdown(f"✅ 自動計算結果：**{auto_value}**")
                         drug_data[col] = auto_value
-
                     else:
                         # 讓使用者輸入數字
                         drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")
@@ -217,9 +217,9 @@ def create_drug_form(ward, drugs):
                             complete = False
                     else:
                         drug_data[col] = "符合"
-            
                     st.markdown("---")
 
+                
                 elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
                     stock_status = st.radio(f"{col} 是否符合 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                     if stock_status == "不符合":
@@ -237,15 +237,18 @@ def create_drug_form(ward, drugs):
                 if col != "備註" and (drug_data[col] == "" or drug_data[col] is None):
                     complete = False
 
-            drug_data["已完成查核"] = reviewed
+
+            # ✅【新增】檢查 checkbox 是否勾選
+            if not reviewed:
+                complete = False  # 未勾選則視為未完成
+
             if not complete:
                 incomplete_drugs.append(drug)
+                
+            drug_data["已完成查核"] = reviewed
 
-                    
-            
-           
             data[drug] = drug_data                    
-            st.markdown("---")
+
 
                 
 
