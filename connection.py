@@ -311,7 +311,7 @@ def main():
         st.write(f"Debug: pharmacist: {pharmacist}")
 
         # ✅【1】檢查畫布是否有簽名
-        elif canvas_result.image_data is None:
+        if canvas_result.image_data is None:
             st.error("請在畫布上簽名")
 
     
