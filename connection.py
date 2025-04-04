@@ -310,24 +310,27 @@ def main():
         st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
         st.write(f"Debug: pharmacist: {pharmacist}")
 
-        # ✅【1】檢查畫布是否有簽名
-        if canvas_result.image_data is None:
-            st.error("請在畫布上簽名")
-            return  # 🚨 直接結束函式，避免送出資料
-    
-        # ✅【2】檢查是否選擇了藥師
-        elif not pharmacist:
-            st.error("請選擇查核藥師")
-            return  # 🚨 直接結束函式，避免送出資料
-    
-        # ✅【3】檢查是否有未填寫的藥品資料
-        elif incomplete_drugs:
-            st.error(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
-            return  # 🚨 直接結束函式，避免送出資料
-    
-            # ✅【4】如果所有資料填寫完整，正式送出
+    # ✅【1】檢查畫布是否有簽名
+    if canvas_result.image_data is None:
+        st.error("請在畫布上簽名")
+
+
+    # ✅【2】檢查是否選擇了藥師
+    elif not pharmacist:
+        st.error("請選擇查核藥師")
+
+
+    # ✅【3】檢查是否有未填寫的藥品資料
+    elif canvas_result.image_data is not None and pharmacist:
+        # 檢查是否有未填寫的藥品資料
+        if incomplete_drugs:
+            st.warning(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
+            st.stop()  # 停止繼續執行，強制要求填寫完整資料
+        else:
+            # 如果所有資料填寫完整，顯示成功信息
             st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
-            st.write(data)  # ✅ 顯示提交的數據（可以改成 `儲存到 Firebase`）
+            st.write(data)  # 顯示提交的數據（如果需要）
+
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
             
