@@ -179,7 +179,6 @@ def create_drug_form(ward, drugs):
     for drug, limit in drugs.items():
         with st.expander(drug):
             drug_data = {}
-            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
             complete = True 
             for col in COLUMNS:
                 if col == "現存量":
@@ -219,8 +218,6 @@ def create_drug_form(ward, drugs):
                     else:
                         drug_data[col] = "符合"
             
-                    data[drug] = drug_data
-                    drug_data["已完成查核"] = reviewed
                     st.markdown("---")
 
                 elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
@@ -241,7 +238,8 @@ def create_drug_form(ward, drugs):
                         complete = False
                 if not complete:
                     incomplete_drugs.append(drug)
-            
+                    
+            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{drug}_reviewed")
                 data[drug] = drug_data
                 drug_data["已完成查核"] = reviewed
                 data[drug] = drug_data                    
@@ -249,7 +247,7 @@ def create_drug_form(ward, drugs):
 
                 
             data[drug] = drug_data
-    return data
+    return data, incomplete_drugs
 
 def main():
     st.title("藥品庫存查核表")
