@@ -174,9 +174,11 @@ def upload_to_drive(file_name, mime_type, file_content):
 
 def create_drug_form(ward, drugs):
     data = {}
+    incomplete_drugs = []
     for drug, limit in drugs.items():
         with st.expander(drug):
             drug_data = {}
+            complete = True 
             for col in COLUMNS:
                 if col == "現存量":
                     drug_data[col] = st.number_input(
@@ -205,17 +207,40 @@ def create_drug_form(ward, drugs):
                     if expiry_status == "不符合":
                         expiry_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                         drug_data[col] = f"不符合: {expiry_reason}" if expiry_reason else "不符合"
+                        if not reason:
+                            complete = False
                     else:
                         drug_data[col] = "符合"
+                    if any(val == "" or val is None for val in drug_data.values()):
+                        complete = False
+                    if not complete:
+                        incomplete_drugs.append(drug)
+            
+                    data[drug] = drug_data
+     st.markdown("---")
+
                 elif col == "常備量=現存量+空瓶(空瓶量=處方箋量)":
-                    stock_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
+                    stock_status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
                     if stock_status == "不符合":
                         stock_reason = st.text_area(f"不符合原因 ({drug})", key=f"{drug}_{col}_reason")
                         drug_data[col] = f"不符合: {stock_reason}" if stock_reason else "不符合"
+                        if not reason:
+                            complete = False
+                        
                     else:
                         drug_data[col] = "符合"
+                    if any(val == "" or val is None for val in drug_data.values()):
+                        complete = False
+                    if not complete:
+                        incomplete_drugs.append(drug)
+            
+                    data[drug] = drug_data
+     st.markdown("---")
+
+
                 elif col == "備註":
                     drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
+                
             data[drug] = drug_data
     return data
 
@@ -270,15 +295,22 @@ def main():
     excel_buffer = None
     pdf_buffer = None
 
-    if st.button("提交", key="submit_button_unique_key"):
-        st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
-        st.write(f"Debug: pharmacist: {pharmacist}")
+    if st.button("提交表單"):
+        # 檢查藥品資料是否完整
+        incomplete_drugs = [drug for drug, info in data.items() if not info.get("已完成查核")]
         
+        # 檢查簽名和查核藥師
         if canvas_result.image_data is None:
             st.error("請在畫布上簽名")
         elif not pharmacist:
             st.error("請選擇查核藥師")
-        elif canvas_result.image_data is not None and pharmacist:
+        elif incomplete_drugs:
+            # 若有未完成的藥品查核
+            st.error(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
+        else:
+            # 所有檢查都通過
+            st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
+            st.write(data)  # 或者是處理提交的邏輯
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
             
