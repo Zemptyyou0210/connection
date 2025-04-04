@@ -236,14 +236,14 @@ def create_drug_form(ward, drugs):
                     
                 if col != "備註" and (drug_data[col] == "" or drug_data[col] is None):
                     complete = False
-                if not complete:
-                    incomplete_drugs.append(drug)
-                
-                data[drug] = drug_data
-                st.markdown("---")
+
+            drug_data["已完成查核"] = reviewed
+            if not complete:
+                incomplete_drugs.append(drug)
+
                     
             
-            drug_data["已完成查核"] = reviewed
+           
             data[drug] = drug_data                    
             st.markdown("---")
 
