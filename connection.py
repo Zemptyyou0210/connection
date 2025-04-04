@@ -305,22 +305,26 @@ def main():
     excel_buffer = None
     pdf_buffer = None
 
-    if st.button("提交表單"):
-        # 檢查藥品資料是否完整
-        incomplete_drugs = [drug for drug, info in data.items() if not info.get("已完成查核")]
+    if st.button("提交", key="submit_button_unique_key"):
+        # 調試信息來檢查值
+        st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
+        st.write(f"Debug: pharmacist: {pharmacist}")
         
-        # 檢查簽名和查核藥師
+        # 檢查畫布是否有簽名
         if canvas_result.image_data is None:
             st.error("請在畫布上簽名")
+        # 檢查是否選擇了藥師
         elif not pharmacist:
             st.error("請選擇查核藥師")
-        elif incomplete_drugs:
-            # 若有未完成的藥品查核
-            st.error(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
-        else:
-            # 所有檢查都通過
-            st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
-            st.write(data)  # 或者是處理提交的邏輯
+        # 如果都有簽名並選擇藥師
+        elif canvas_result.image_data is not None and pharmacist:
+            # 檢查是否有未填寫的藥品資料
+            if incomplete_drugs:
+                st.error(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
+            else:
+                # 如果所有資料填寫完整，顯示成功信息
+                st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
+                st.write(data)  # 顯示提交的數據（如果需要）
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
             
