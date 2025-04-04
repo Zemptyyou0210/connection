@@ -307,8 +307,8 @@ def main():
 
     if st.button("提交", key="submit_button_unique_key"):
     # ✅【調試訊息】檢查 canvas 簽名 & 藥師選擇
-    st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
-    st.write(f"Debug: pharmacist: {pharmacist}")
+        st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
+        st.write(f"Debug: pharmacist: {pharmacist}")
 
     # ✅【1】檢查畫布是否有簽名
     if canvas_result.image_data is None:
@@ -325,7 +325,7 @@ def main():
         st.error(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
         return  # 🚨 直接結束函式，避免送出資料
 
-    # ✅【4】如果所有資料填寫完整，正式送出
+        # ✅【4】如果所有資料填寫完整，正式送出
     st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
     st.write(data)  # ✅ 顯示提交的數據（可以改成 `儲存到 Firebase`）
             # 使用選擇的日期
