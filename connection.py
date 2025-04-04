@@ -235,7 +235,7 @@ def create_drug_form(ward, drugs):
                 elif col == "備註":
                     drug_data[col] = st.text_area(f"{col} ({drug})", key=f"{drug}_{col}")
                     
-                if any(val == "" or val is None for val in drug_data.values()):
+                if col != "備註" and (drug_data[col] == "" or drug_data[col] is None):
                     complete = False
                 if not complete:
                     incomplete_drugs.append(drug)
