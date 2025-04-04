@@ -24,6 +24,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from datetime import date
+import numpy as np
 
 # 設置日誌記錄
 logging.basicConfig(level=logging.INFO)
@@ -311,7 +312,7 @@ def main():
         st.write(f"Debug: pharmacist: {pharmacist}")
 
         # ✅【1】檢查畫布是否有簽名
-        if canvas_result.image_data is None:
+        if canvas_result.image_data is None or np.all(canvas_result.image_data == [255, 255, 255, 255]):  # 全白色表示沒有簽名
             st.error("請在畫布上簽名")
 
     
