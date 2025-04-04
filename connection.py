@@ -190,7 +190,16 @@ def create_drug_form(ward, drugs):
                 if drug_data[col] > limit * 0.8:  # 如果庫存超過限制的80%，顯示警告
                     st.warning(f"注意：{drug}的庫存接近或超過限制（{limit}支）")
             elif col in ["空瓶", "處方箋"]:
-                drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}")
+                # 是否符合預設條件
+                status = st.radio(f"{col} 是否符合預設條件 ({drug})", ["符合", "不符合"], horizontal=True, key=f"{drug}_{col}_status")
+                if status == "符合":
+                    # 自動計算 = 庫存上限 - 現存量
+                    auto_value = max(limit - drug_data.get("現存量", 0), 0)
+                    st.markdown(f"✅ 自動計算結果：**{auto_value}**")
+                    drug_data[col] = auto_value
+                else:
+                    # 讓使用者輸入數字
+                    drug_data[col] = st.number_input(f"{col} ({drug})", min_value=0, value=0, key=f"{drug}_{col}_manual")    
             elif col == "效期>6個月":
                 expiry_status = st.selectbox(f"{col} ({drug})", ["符合", "不符合"], key=f"{drug}_{col}")
                 if expiry_status == "不符合":
