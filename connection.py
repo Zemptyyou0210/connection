@@ -293,7 +293,6 @@ def main():
         background_color="#ffffff",
         height=300,
         drawing_mode="freedraw",
-        clear_on_submit=st.session_state.clear_canvas,
         key="canvas",
     )
     st.write(f"Debug: canvas_result.image_data: {canvas_result.image_data}")
