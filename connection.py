@@ -296,7 +296,7 @@ def main():
         drawing_mode="freedraw",
         key="canvas",
     )
-    st.write(f"Debug: canvas_result.image_data: {canvas_result.image_data}")
+    # st.write(f"Debug: canvas_result.image_data: {canvas_result.image_data}") 檢查畫布內容用
     st.write("Debug: Starting main function")
     st.write(f"Debug: upload_to_drive function exists: {'upload_to_drive' in globals()}")
     
