@@ -287,7 +287,7 @@ def main():
         stroke_width=2,
         stroke_color="#000000",
         background_color="#ffffff",
-        height=250,
+        height=300,
         drawing_mode="freedraw",
         key="canvas",
     )
