@@ -294,7 +294,7 @@ def main():
         background_color="#ffffff",
         height=300,
         drawing_mode="freedraw",
-        key="canvas",
+        key=f"canvas_{ward}",
     )
     # st.write(f"Debug: canvas_result.image_data: {canvas_result.image_data}") 檢查畫布內容用
     st.write("Debug: Starting main function")
