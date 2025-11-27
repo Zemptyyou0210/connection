@@ -310,7 +310,7 @@ def main():
                 reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_oral_{drug}_reason")
     
             # # 手動勾選完成查核
-            # reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
+            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
 
             if reviewed:
                 oral_data[drug] = {
@@ -636,6 +636,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
