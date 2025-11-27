@@ -263,7 +263,7 @@ def create_drug_form(ward, drugs):
 
 def main():
     if "oral_data" not in st.session_state:
-    st.session_state.oral_data = {}
+        st.session_state.oral_data = {}
     
     st.title("藥品庫存查核表")
 
@@ -635,6 +635,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
