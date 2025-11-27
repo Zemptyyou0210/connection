@@ -262,6 +262,9 @@ def create_drug_form(ward, drugs):
     return data, incomplete_drugs
 
 def main():
+    if "oral_data" not in st.session_state:
+    st.session_state.oral_data = {}
+    
     st.title("藥品庫存查核表")
 
     # 使用 st.empty() 創建一個佔位符
@@ -288,8 +291,6 @@ def main():
     data, incomplete_drugs = create_drug_form(ward, drugs)
 
     # ------------------------------------------------------------------------------------------------
-    if "oral_data" not in st.session_state:
-        st.session_state.oral_data = {}
     
     with st.expander(f"{ward} 口服管制藥品查核"):
         used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
@@ -316,7 +317,7 @@ def main():
                     "是否符合": "符合" if match else "不符合",
                     "不符合原因": reason,
                 }
-    
+                oral_data = st.session_state.oral_data
                 st.success(f"{drug} 已加入紀錄 ✔")
     
         else:
@@ -405,25 +406,28 @@ def main():
                 }
                 df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
+            if oral_data and len(oral_data) > 0:
+                for drug, info in oral_data.items():
+                    row = {
+                        '單位': ward,
+                        '常備品項': drug,
+                        '常備量': '',  # 口服藥沒有常備量，可以留空
+                        '現存量': info['應剩餘量'],
+                        '空瓶': '',
+                        '處方箋': '',
+                        '效期>6個月': '',
+                        '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
+                        '日期': selected_date.strftime("%Y/%m/%d"),
+                        '被查核單位主管': '',
+                        '查核藥師': pharmacist,
+                        '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
+                    }                
+                                
+                    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
+                else:
+                    st.warning("⚠ 口服藥品沒有任何資料")
 
-            for drug, info in oral_data.items():
-                row = {
-                    '單位': ward,
-                    '常備品項': drug,
-                    '常備量': '',  # 口服藥沒有常備量，可以留空
-                    '現存量': info['應剩餘量'],
-                    '空瓶': '',
-                    '處方箋': '',
-                    '效期>6個月': '',
-                    '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
-                    '日期': selected_date.strftime("%Y/%m/%d"),
-                    '被查核單位主管': '',
-                    '查核藥師': pharmacist,
-                    '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
-                }                
-                            
-                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
-                
+            
             # 保存為 Excel 文件
             excel_buffer = io.BytesIO()
             with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
@@ -631,6 +635,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
