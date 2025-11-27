@@ -311,17 +311,18 @@ def main():
     
             # # 手動勾選完成查核
             # reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
-    
-            # 暫存到 oral_data
-            oral_data[drug] = {
-                "床號": bed,
-                "病歷號": mrn,
-                "應剩餘量": expected,
-                "實際剩餘量": actual,
-                "是否符合": "符合" if match else "不符合",
-                "不符合原因": reason
 
-            }
+            if reviewed:
+                oral_data[drug] = {
+                    "床號": bed,
+                    "病歷號": mrn,
+                    "應剩餘量": expected,
+                    "實際剩餘量": actual,
+                    "是否符合": "符合" if match else "不符合",
+                    "不符合原因": reason,
+                    "查核人": pharmasit
+                }
+
     
         else:
             st.info("本病房未使用口服管制藥品，可跳過查核")
@@ -635,6 +636,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
