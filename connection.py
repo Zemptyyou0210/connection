@@ -286,56 +286,56 @@ def main():
     # ------------------------------------------------------------------------------------------------
     with st.expander("口服管制藥品查核"):
     # 1️⃣ 先問是否有人使用
-    used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
-
-    if used_any:
-        # 2️⃣ 選擇藥品
-        drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
-
-        # 3️⃣ 填寫床號、病歷號、剩餘量等
-        bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
-        mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
-        expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
-        actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
-        inspector = st.selectbox("查核人", PHARMACISTS, key=f"{ward}_oral_{drug}_inspector")
-
-        # 4️⃣ 判定是否符合
-        match = (expected == actual)
-        reason = ""
-        if not match:
-            reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_oral_{drug}_reason")
-
-        # 5️⃣ 手動勾選完成查核
-        reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
-
-        # 6️⃣ 可在這裡做提交或暫存到 session_state
-        if st.button(f"新增 {drug} 查核紀錄", key=f"{ward}_oral_{drug}_submit"):
-            if not bed or not mrn:
-                st.error("床號、病歷號為必填欄位")
-            elif not match and not reason.strip():
-                st.error("不符合時請填寫原因")
-            elif not reviewed:
-                st.warning("請勾選「已完成查核」再提交")
-            else:
-                record = {
-                    "病房": ward,
-                    "藥品": drug,
-                    "床號": bed,
-                    "病歷號": mrn,
-                    "應剩餘量": expected,
-                    "實際剩餘量": actual,
-                    "是否符合": "符合" if match else "不符合",
-                    "不符合原因": reason,
-                    "查核人": inspector,
-                    "已完成查核": "是" if reviewed else "否"
-                }
-                if "oral_audit_records" not in st.session_state:
-                    st.session_state.oral_audit_records = []
-                st.session_state.oral_audit_records.append(record)
-                st.success(f"{drug} 查核紀錄已新增")
-
-    else:
-        st.info("本病房未使用口服管制藥品，可跳過查核")
+        used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
+    
+        if used_any:
+            # 2️⃣ 選擇藥品
+            drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
+    
+            # 3️⃣ 填寫床號、病歷號、剩餘量等
+            bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
+            mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
+            expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
+            actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
+            inspector = st.selectbox("查核人", PHARMACISTS, key=f"{ward}_oral_{drug}_inspector")
+    
+            # 4️⃣ 判定是否符合
+            match = (expected == actual)
+            reason = ""
+            if not match:
+                reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_oral_{drug}_reason")
+    
+            # 5️⃣ 手動勾選完成查核
+            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
+    
+            # 6️⃣ 可在這裡做提交或暫存到 session_state
+            if st.button(f"新增 {drug} 查核紀錄", key=f"{ward}_oral_{drug}_submit"):
+                if not bed or not mrn:
+                    st.error("床號、病歷號為必填欄位")
+                elif not match and not reason.strip():
+                    st.error("不符合時請填寫原因")
+                elif not reviewed:
+                    st.warning("請勾選「已完成查核」再提交")
+                else:
+                    record = {
+                        "病房": ward,
+                        "藥品": drug,
+                        "床號": bed,
+                        "病歷號": mrn,
+                        "應剩餘量": expected,
+                        "實際剩餘量": actual,
+                        "是否符合": "符合" if match else "不符合",
+                        "不符合原因": reason,
+                        "查核人": inspector,
+                        "已完成查核": "是" if reviewed else "否"
+                    }
+                    if "oral_audit_records" not in st.session_state:
+                        st.session_state.oral_audit_records = []
+                    st.session_state.oral_audit_records.append(record)
+                    st.success(f"{drug} 查核紀錄已新增")
+    
+        else:
+            st.info("本病房未使用口服管制藥品，可跳過查核")
 
     # ------------------------------------------------------------------------------------------------
     # 創建藥品表單
@@ -629,6 +629,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
