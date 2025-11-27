@@ -407,7 +407,9 @@ def main():
                     '查核藥師': pharmacist,
                     '備註': info['備註']
                 }
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
+            
             for drug, info in oral_data.items():
                 row = {
                     '單位': ward,
@@ -633,6 +635,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
