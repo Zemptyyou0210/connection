@@ -289,38 +289,38 @@ def main():
 
     # ------------------------------------------------------------------------------------------------
     if "oral_data" not in st.session_state:
-    st.session_state.oral_data = {}
+        st.session_state.oral_data = {}
     
     with st.expander(f"{ward} 口服管制藥品查核"):
-    used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
-
-    if used_any:
-        drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
-
-        bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
-        mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
-        expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
-        actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
-
-        match = (expected == actual)
-        reason = "" if match else st.text_area("不符合原因", key=f"{ward}_oral_{drug}_reason")
-
-        reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
-
-        if reviewed:
-            st.session_state.oral_data[drug] = {
-                "床號": bed,
-                "病歷號": mrn,
-                "應剩餘量": expected,
-                "實際剩餘量": actual,
-                "是否符合": "符合" if match else "不符合",
-                "不符合原因": reason,
-            }
-
-            st.success(f"{drug} 已加入紀錄 ✔")
-
-    else:
-        st.info("本病房未使用口服管制藥品，可跳過查核")
+        used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
+    
+        if used_any:
+            drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
+    
+            bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
+            mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
+            expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
+            actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
+    
+            match = (expected == actual)
+            reason = "" if match else st.text_area("不符合原因", key=f"{ward}_oral_{drug}_reason")
+    
+            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
+    
+            if reviewed:
+                st.session_state.oral_data[drug] = {
+                    "床號": bed,
+                    "病歷號": mrn,
+                    "應剩餘量": expected,
+                    "實際剩餘量": actual,
+                    "是否符合": "符合" if match else "不符合",
+                    "不符合原因": reason,
+                }
+    
+                st.success(f"{drug} 已加入紀錄 ✔")
+    
+        else:
+            st.info("本病房未使用口服管制藥品，可跳過查核")
 
     # ------------------------------------------------------------------------------------------------
     
@@ -631,6 +631,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
