@@ -297,7 +297,6 @@ def main():
             mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
             expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
             actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
-            inspector = st.selectbox("查核人", PHARMACISTS, key=f"{ward}_oral_{drug}_inspector")
     
             # 4️⃣ 判定是否符合
             match = (expected == actual)
@@ -629,6 +628,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
