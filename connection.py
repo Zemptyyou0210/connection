@@ -283,10 +283,14 @@ def main():
 
     # 獲取該病房的藥品列表和庫存限制
     drugs = WARD_DRUGS[ward]
+
+    # 創建藥品表單
+    data, incomplete_drugs = create_drug_form(ward, drugs)
+
     # ------------------------------------------------------------------------------------------------
     oral_data = {}  # 用來暫存口服藥資料
     
-    with st.expander("口服管制藥品查核"):
+    with st.expander(f"{ward} 口服管制藥品查核"):
         used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
     
         if used_any:
@@ -325,9 +329,7 @@ def main():
             st.info("本病房未使用口服管制藥品，可跳過查核")
 
     # ------------------------------------------------------------------------------------------------
-    # 創建藥品表單
-    data, incomplete_drugs = create_drug_form(ward, drugs)
-
+    
     # 添加查核藥師下拉選單
     pharmacist = st.selectbox("查核藥師", PHARMACISTS, help="請選擇查核藥師")
 
@@ -616,6 +618,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
