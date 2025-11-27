@@ -302,7 +302,6 @@ def main():
             mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
             expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
             actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
-            inspector = st.selectbox("查核人", PHARMACISTS, key=f"{ward}_oral_{drug}_inspector")
     
             # 判定是否符合
             match = (expected == actual)
@@ -320,9 +319,8 @@ def main():
                 "應剩餘量": expected,
                 "實際剩餘量": actual,
                 "是否符合": "符合" if match else "不符合",
-                "不符合原因": reason,
-                "查核人": inspector,
-                # "已完成查核": "是" if reviewed else "否"
+                "不符合原因": reason
+
             }
     
         else:
@@ -409,6 +407,23 @@ def main():
                     '查核藥師': pharmacist,
                     '備註': info['備註']
                 }
+
+            for drug, info in oral_data.items():
+                row = {
+                    '單位': ward,
+                    '常備品項': drug,
+                    '常備量': '',  # 口服藥沒有常備量，可以留空
+                    '現存量': info['應剩餘量'],
+                    '空瓶': '',
+                    '處方箋': '',
+                    '效期>6個月': '',
+                    '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
+                    '日期': selected_date.strftime("%Y/%m/%d"),
+                    '被查核單位主管': '',
+                    '查核藥師': info['查核人'],
+                    '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
+                }
+                            
                 df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
         
             # 保存為 Excel 文件
@@ -618,6 +633,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
