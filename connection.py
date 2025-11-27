@@ -288,44 +288,39 @@ def main():
     data, incomplete_drugs = create_drug_form(ward, drugs)
 
     # ------------------------------------------------------------------------------------------------
-    oral_data = {}  # 用來暫存口服藥資料
+    if "oral_data" not in st.session_state:
+    st.session_state.oral_data = {}
     
     with st.expander(f"{ward} 口服管制藥品查核"):
-        used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
-    
-        if used_any:
-            # 選擇藥品
-            drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
-    
-            # 填寫欄位
-            bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
-            mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
-            expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
-            actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
-    
-            # 判定是否符合
-            match = (expected == actual)
-            reason = ""
-            if not match:
-                reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_oral_{drug}_reason")
-    
-            # # 手動勾選完成查核
-            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
+    used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
 
-            if reviewed:
-                oral_data[drug] = {
-                    "床號": bed,
-                    "病歷號": mrn,
-                    "應剩餘量": expected,
-                    "實際剩餘量": actual,
-                    "是否符合": "符合" if match else "不符合",
-                    "不符合原因": reason,
+    if used_any:
+        drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
 
-                }
+        bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
+        mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
+        expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
+        actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
 
-    
-        else:
-            st.info("本病房未使用口服管制藥品，可跳過查核")
+        match = (expected == actual)
+        reason = "" if match else st.text_area("不符合原因", key=f"{ward}_oral_{drug}_reason")
+
+        reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
+
+        if reviewed:
+            st.session_state.oral_data[drug] = {
+                "床號": bed,
+                "病歷號": mrn,
+                "應剩餘量": expected,
+                "實際剩餘量": actual,
+                "是否符合": "符合" if match else "不符合",
+                "不符合原因": reason,
+            }
+
+            st.success(f"{drug} 已加入紀錄 ✔")
+
+    else:
+        st.info("本病房未使用口服管制藥品，可跳過查核")
 
     # ------------------------------------------------------------------------------------------------
     
@@ -410,26 +405,24 @@ def main():
                 }
                 df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
-            if len(oral_data) == 0:
-                st.warning("⚠️ 口服管制藥品尚未填寫任何資料，請確認是否有人使用口服管制藥品或是否完成查核。")
-            else:
-                    for drug, info in oral_data.items():
-                        row = {
-                            '單位': ward,
-                            '常備品項': drug,
-                            '常備量': '',  # 口服藥沒有常備量，可以留空
-                            '現存量': info['應剩餘量'],
-                            '空瓶': '',
-                            '處方箋': '',
-                            '效期>6個月': '',
-                            '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
-                            '日期': selected_date.strftime("%Y/%m/%d"),
-                            '被查核單位主管': '',
-                            '查核藥師': pharmacist,
-                            '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
-                        }                
-                                    
-                        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
+
+            for drug, info in oral_data.items():
+                row = {
+                    '單位': ward,
+                    '常備品項': drug,
+                    '常備量': '',  # 口服藥沒有常備量，可以留空
+                    '現存量': info['應剩餘量'],
+                    '空瓶': '',
+                    '處方箋': '',
+                    '效期>6個月': '',
+                    '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
+                    '日期': selected_date.strftime("%Y/%m/%d"),
+                    '被查核單位主管': '',
+                    '查核藥師': pharmacist,
+                    '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
+                }                
+                            
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
                 
             # 保存為 Excel 文件
             excel_buffer = io.BytesIO()
@@ -638,6 +631,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
