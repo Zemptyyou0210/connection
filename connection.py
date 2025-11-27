@@ -310,8 +310,8 @@ def main():
             if not match:
                 reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_oral_{drug}_reason")
     
-            # 手動勾選完成查核
-            reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
+            # # 手動勾選完成查核
+            # reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_oral_{drug}_reviewed")
     
             # 暫存到 oral_data
             oral_data[drug] = {
@@ -322,7 +322,7 @@ def main():
                 "是否符合": "符合" if match else "不符合",
                 "不符合原因": reason,
                 "查核人": inspector,
-                "已完成查核": "是" if reviewed else "否"
+                # "已完成查核": "是" if reviewed else "否"
             }
     
         else:
@@ -618,6 +618,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
