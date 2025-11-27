@@ -284,26 +284,26 @@ def main():
     # 獲取該病房的藥品列表和庫存限制
     drugs = WARD_DRUGS[ward]
     # ------------------------------------------------------------------------------------------------
-    with st.expander(f"口服管制藥品查核"):
-        # 第一個問題：是否有人使用
-        reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_reviewed")
-        used = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used")
+    # with st.expander(f"口服管制藥品查核"):
+    #     # 第一個問題：是否有人使用
+    #     reviewed = st.checkbox(f"✅ 已完成 {drug} 查核", key=f"{ward}_reviewed")
+    #     used = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used")
         
-        if used:
-            # 後續資料欄位
-            drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
-            bed = st.text_input(f"床號", key=f"{ward}_{drug}_bed")
-            mrn = st.text_input(f"病歷號", key=f"{ward}_{drug}_mrn")
-            drug = st.selectbox("口服管制藥品", oral_drugs,key=f"{ward}_{drug}_drug")
-            expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_{drug}_expected")
-            actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_{drug}_actual")
-            inspector = st.selectbox("查核人", ["藥師A", "藥師B"], key=f"{ward}_{drug}_inspector")
+    #     if used:
+    #         # 後續資料欄位
+    #         drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
+    #         bed = st.text_input(f"床號", key=f"{ward}_{drug}_bed")
+    #         mrn = st.text_input(f"病歷號", key=f"{ward}_{drug}_mrn")
+    #         drug = st.selectbox("口服管制藥品", oral_drugs,key=f"{ward}_{drug}_drug")
+    #         expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_{drug}_expected")
+    #         actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_{drug}_actual")
+    #         inspector = st.selectbox("查核人", ["藥師A", "藥師B"], key=f"{ward}_{drug}_inspector")
 
-            # 判定是否符合
-            match = (expected == actual)
-            reason = ""
-            if not match:
-                reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_{drug}_reason")
+    #         # 判定是否符合
+    #         match = (expected == actual)
+    #         reason = ""
+    #         if not match:
+    #             reason = st.text_area("不符合原因（重大異常請填）", key=f"{ward}_{drug}_reason")
 
     # ------------------------------------------------------------------------------------------------
     # 創建藥品表單
@@ -597,5 +597,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
