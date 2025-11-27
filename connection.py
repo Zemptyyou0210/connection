@@ -320,7 +320,7 @@ def main():
                     "實際剩餘量": actual,
                     "是否符合": "符合" if match else "不符合",
                     "不符合原因": reason,
-                    "查核人": pharmasit
+
                 }
 
     
@@ -636,6 +636,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
