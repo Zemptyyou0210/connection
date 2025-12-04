@@ -1,7 +1,7 @@
 import logging
 import streamlit as st
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
 import io
@@ -9,14 +9,22 @@ import openpyxl
 from openpyxl.drawing.image import Image as XLImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-from reportlab.platypus import ListFlowable, ListItem
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as ReportLabImage
+# 整合 ReportLab platypus 匯入，移除 ListFlowable
+from reportlab.platypus import (
+    SimpleDocTemplate, 
+    Table, 
+    TableStyle, 
+    Paragraph, 
+    Spacer, 
+    ListItem, 
+    List, 
+    Image as ReportLabImage # 避免與 PIL.Image 衝突
+)
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.utils import ImageReader
-from reportlab.platypus import ListItem, List
 from io import BytesIO
 import os
 import re
@@ -25,7 +33,6 @@ import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
-from datetime import date
 import numpy as np
 
 # 設置日誌記錄
@@ -749,6 +756,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
