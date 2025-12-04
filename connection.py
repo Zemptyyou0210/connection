@@ -663,14 +663,9 @@ def main():
         
                 story.append(table)
  # -----------------------------------------------------------------------------------------------以下為新增的口服PDF區塊
-                # ==============================================
-                #口服管制藥品使用查核區塊
-                # ==============================================
-                
-                # 假設 oral_data 變數在上方已經定義並從 st.session_state 取得最新資料
 
+                # 假設 oral_data 變數在上方已經定義並從 st.session_state 取得最新資料
                 story.append(Spacer(1, 10*mm)) # 增加 IV 表格和新區塊的間距
-                
                 # 1. 設置口服藥品標題
                 oral_title_style = ParagraphStyle('OralTitle', fontName='KaiU', fontSize=12, alignment=0, spaceAfter=5)
                 story.append(Paragraph("<b>口服管制藥品使用查核</b>", oral_title_style))
@@ -750,6 +745,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
