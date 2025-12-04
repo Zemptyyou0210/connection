@@ -700,7 +700,7 @@ def main():
                         # 確保您已經在程式碼開頭 import 了 ListFlowable 和 ListItem
                         story.append(ListFlowable(
                             list_items, 
-                            bulletType='label', 
+ 
                             start='*', 
                             bulletFontSize=9
                         ))
@@ -760,6 +760,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
