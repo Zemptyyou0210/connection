@@ -426,10 +426,7 @@ def main():
             else:
                 st.warning("⚠ 口服藥品沒有任何資料")
             
-            st.write("--- 最終提交資料調試 ---")
-            st.write(f"IV 藥品筆數: {len(df)}")
-            st.write(f"口服藥品筆數: {len(df_oral)}")
-            st.write("--------------------")
+
       
             
             
@@ -798,6 +795,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
