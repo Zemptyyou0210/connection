@@ -420,11 +420,13 @@ def main():
 
             
             if oral_records:
+                # 2. 直接創建 df_oral，並補上通用欄位
                 df_oral = pd.DataFrame(oral_records)
-                # 補上所有缺少的欄位，以符合 Excel 寫入需求 (例如 日期, 查核藥師)
+                # 補上單位、日期和查核藥師欄位
                 df_oral.insert(0, '單位', ward) 
                 df_oral['日期'] = selected_date.strftime("%Y/%m/%d")
                 df_oral['查核藥師'] = pharmacist
+
             else:
                 st.warning("⚠ 口服藥品沒有任何資料")
             
@@ -797,6 +799,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
