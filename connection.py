@@ -414,7 +414,7 @@ def main():
             st.write(f"資料長度: {len(st.session_state.oral_data)}")
             st.write("--------------------")
 
-            oral_data = st.session_state.oral_data
+            oral_records = st.session_state.oral_data_records if 'oral_data_records' in st.session_state else []
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
             if oral_data and len(oral_data) > 0:
@@ -792,6 +792,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
