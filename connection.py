@@ -10,6 +10,7 @@ from openpyxl.drawing.image import Image as XLImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.platypus import ListFlowable, ListItem
+from reportlab.platypus import List as RLList, ListItem as RLListItem
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as ReportLabImage
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -264,6 +265,17 @@ def create_drug_form(ward, drugs):
     return data, incomplete_drugs
 
 def main():
+# ----------------------------------------------------
+    # ✅ 關鍵最終修正：強制局部匯入並使用別名
+    try:
+        from reportlab.platypus import List as RLList, ListItem as RLListItem
+    except ImportError:
+        # 如果 ReportLab 沒裝好，我們至少避免應用程式崩潰
+        st.error("🚨 錯誤：ReportLab 列表模組匯入失敗，請檢查環境設定。")
+        RLList = None
+        RLListItem = None
+    
+    
     if "oral_data_records" not in st.session_state:
         st.session_state.oral_data_records = []
     
@@ -749,6 +761,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
