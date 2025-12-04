@@ -683,7 +683,7 @@ def main():
                     # 🚨 關鍵修正：使用 df_oral.iterrows() 遍歷
                     for index, row in df_oral.iterrows():
                         # 組合您要求的單行敘述
-                        description = f"**{row['單位']}-{row['床號']}** 查核藥品: {row['查核藥品']}, 病歷號: {row['病歷號']}, 應剩餘量: {row['應剩餘量']}, 實際剩餘量: {row['實際剩餘量']}, 查核結果: {row['查核結果']}, 不符合原因: {row['不符合原因']}"
+                        description = f"**{row['單位']}-{row['床號']}** 查核藥品: {row['查核藥品']}, 病歷號: {row['病歷號']}, 應剩餘量: {row['應剩餘量']}, 實際剩餘量: {row['實際剩餘量']}, 是否符合: {row['查核結果']}, 不符合原因: {row['不符合原因']}"
                         
                         list_items.append(
                             ListItem(Paragraph(description, chinese_style), leftIndent=20)
@@ -748,6 +748,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
