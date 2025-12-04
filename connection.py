@@ -664,42 +664,57 @@ def main():
                 story.append(table)
  # -----------------------------------------------------------------------------------------------以下為新增的口服PDF區塊
 
+                story.append(table) # IV 藥品表格結束
+
+                # ==============================================
+                # 🚀 【新增】口服管制藥品使用查核區塊 (已清潔 U+00A0 字元)
+                # ==============================================
+                
                 # 假設 oral_data 變數在上方已經定義並從 st.session_state 取得最新資料
-                story.append(Spacer(1, 10*mm)) # 增加 IV 表格和新區塊的間距
-                # 1. 設置口服藥品標題
-                oral_title_style = ParagraphStyle('OralTitle', fontName='KaiU', fontSize=12, alignment=0, spaceAfter=5)
-                story.append(Paragraph("<b>口服管制藥品使用查核</b>", oral_title_style))
-                
-                # 2. 判斷是否有口服藥品資料
-                if oral_data and len(oral_data) > 0:
-                    # 顯示「是」
-                    oral_status_text = Paragraph("💊 本次查核口服管制藥品使用：**是**", chinese_style)
-                    story.append(oral_status_text)
-                    story.append(Spacer(1, 2*mm))
 
-                    # 3. 遍歷並創建列表敘述
-                    list_items = []
-                    for drug, info in oral_data.items():
-                        # 組合您要求的單行敘述
-                        description = f"**{ward}-{info['床號']}** 查核藥品: {drug}, 病歷號: {info['病歷號']}, 應剩餘量: {info['應剩餘量']}, 實際剩餘量: {info['實際剩餘量']}, 查核結果: {info['是否符合']}, 不符合原因: {info['不符合原因']}"
-                        
-                        list_items.append(
-                            ListItem(Paragraph(description, chinese_style), leftIndent=20)
-                        )
-                    
-                    # 將列表 Flowable 加入 story
-                    if list_items:
-                        story.append(ListFlowable(
-                            list_items, 
-                            bulletType='label', 
-                            start='*', 
-                            bulletFontSize=9
-                        ))
+                story.append(Spacer(1, 10*mm)) # 增加 IV 表格和新區塊的間距
+                
+                # 1. 設置口服藥品標題
+                oral_title_style = ParagraphStyle('OralTitle', fontName='KaiU', fontSize=12, alignment=0, spaceAfter=5)
+                story.append(Paragraph("<b>口服管制藥品使用查核</b>", oral_title_style))
+                
+                # 2. 判斷是否有口服藥品資料
+                if oral_data and len(oral_data) > 0:
+                    # 顯示「是」
+                    oral_status_text = Paragraph("💊 本次查核口服管制藥品使用：**是**", chinese_style)
+                    story.append(oral_status_text)
+                    story.append(Spacer(1, 2*mm))
 
-                else:
-                    # 顯示「否」
-                    oral_status_text = Paragraph("💊 本次查核口服管制藥品使用：否", chinese_style)
-                    story.append(oral_status_text)
+                    # 3. 遍歷並創建列表敘述
+                    list_items = []
+                    for drug, info in oral_data.items():
+                        # 組合您要求的單行敘述
+                        description = f"**{ward}-{info['床號']}** 查核藥品: {drug}, 病歷號: {info['病歷號']}, 應剩餘量: {info['應剩餘量']}, 實際剩餘量: {info['實際剩餘量']}, 查核結果: {info['是否符合']}, 不符合原因: {info['不符合原因']}"
+                        
+                        list_items.append(
+                            ListItem(Paragraph(description, chinese_style), leftIndent=20)
+                        )
+                    
+                    # 將列表 Flowable 加入 story
+                    if list_items:
+                        # 確保您已經在程式碼開頭 import 了 ListFlowable 和 ListItem
+                        story.append(ListFlowable(
+                            list_items, 
+                            bulletType='label', 
+                            start='*', 
+                            bulletFontSize=9
+                        ))
+
+                else:
+                    # 顯示「否」
+                    oral_status_text = Paragraph("💊 本次查核口服管制藥品使用：否", chinese_style)
+                    story.append(oral_status_text)
+                    
+                # ==============================================
+                # 口服藥品查核區塊結束
+                # ==============================================
+
+
 # ----------------------------------------------------------------------------------------------------以上為新增的口服PDF區塊
                 # 生成 PDF
                 doc.build(story)
@@ -745,6 +760,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
