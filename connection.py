@@ -9,6 +9,7 @@ import openpyxl
 from openpyxl.drawing.image import Image as XLImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
+from reportlab.platypus import ListFlowable, ListItem
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as ReportLabImage
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -421,25 +422,51 @@ def main():
                 }
                 df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
+            # 本來將針劑跟口服合成同一個dataframe用
+            # if oral_data and len(oral_data) > 0:
+            #     for drug, info in oral_data.items():
+            #         row = {
+            #             '單位': ward,
+            #             '常備品項': drug,
+            #             '常備量': '',  # 口服藥沒有常備量，可以留空
+            #             '現存量': info['應剩餘量'],
+            #             '空瓶': '',
+            #             '處方箋': '',
+            #             '效期>6個月': '',
+            #             '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
+            #             '日期': selected_date.strftime("%Y/%m/%d"),
+            #             '被查核單位主管': '',
+            #             '查核藥師': pharmacist,
+            #             '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
+            #         }                
+                                
+            #         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
+
+            oral_records = []
             if oral_data and len(oral_data) > 0:
                 for drug, info in oral_data.items():
-                    row = {
-                        '單位': ward,
-                        '常備品項': drug,
-                        '常備量': '',  # 口服藥沒有常備量，可以留空
-                        '現存量': info['應剩餘量'],
-                        '空瓶': '',
-                        '處方箋': '',
-                        '效期>6個月': '',
-                        '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
+                    oral_records.append({
+                        '單位': ward, 
+                        '查核藥品': drug,
+                        '床號': info['床號'],
+                        '病歷號': info['病歷號'],
+                        '應剩餘量': info['應剩餘量'],
+                        '實際剩餘量': info['實際剩餘量'],
+                        '查核結果': info['是否符合'],
+                        '不符合原因': info['不符合原因'],
                         '日期': selected_date.strftime("%Y/%m/%d"),
-                        '被查核單位主管': '',
-                        '查核藥師': pharmacist,
-                        '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
-                    }                
-                                
-                    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
-
+                        '查核藥師': pharmacist
+                    })
+            
+                # 創建口服藥品專用的 DataFrame
+                df_oral = pd.DataFrame(oral_records)
+            else:
+                # 如果沒有口服資料，創建一個空的 DataFrame 以避免錯誤
+                df_oral = pd.DataFrame(columns=[
+                    '單位', '查核藥品', '床號', '病歷號', 
+                    '應剩餘量', '實際剩餘量', '查核結果', 
+                    '不符合原因', '日期', '查核藥師'
+                ])
 
             
             # 保存為 Excel 文件
@@ -452,7 +479,21 @@ def main():
                 for idx, col in enumerate(df.columns):
                     max_length = max(df[col].astype(str).map(len).max(), len(col))
                     worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
-        
+                # ----------------------------------------------------
+                # 🚀 【新增】寫入口服藥品 (Oral) 到第二個 Sheet
+                # ----------------------------------------------------
+                if not df_oral.empty and len(df_oral) > 0:
+                    sheet_name_oral = '口服查核資料'
+                    df_oral.to_excel(writer, sheet_name=sheet_name_oral, index=False)
+                    
+                    # 調整 Oral Sheet 列寬
+                    worksheet_oral = writer.sheets[sheet_name_oral]
+                    for idx, col in enumerate(df_oral.columns):
+                        # 使用 df_oral 的欄位來計算長度
+                        max_length = max(df_oral[col].astype(str).map(len).max(), len(col))
+                        worksheet_oral.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
+
+                
                 # 將簽名保存為圖片
                 img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
                 img_byte_arr = io.BytesIO()
@@ -620,7 +661,50 @@ def main():
                 ]))
         
                 story.append(table)
-        
+ # -----------------------------------------------------------------------------------------------以下為新增的口服PDF區塊
+# ==============================================
+                # 🚀 【新增】口服管制藥品使用查核區塊
+                # ==============================================
+                
+                # 假設 oral_data 變數在上方已經定義並從 st.session_state 取得最新資料
+
+                story.append(Spacer(1, 10*mm)) # 增加 IV 表格和新區塊的間距
+                
+                # 1. 設置口服藥品標題
+                oral_title_style = ParagraphStyle('OralTitle', fontName='KaiU', fontSize=12, alignment=0, spaceAfter=5)
+                story.append(Paragraph("<b>口服管制藥品使用查核</b>", oral_title_style))
+                
+                # 2. 判斷是否有口服藥品資料
+                if oral_data and len(oral_data) > 0:
+                    # 顯示「是」
+                    oral_status_text = Paragraph("💊 本次查核口服管制藥品使用：**是**", chinese_style)
+                    story.append(oral_status_text)
+                    story.append(Spacer(1, 2*mm))
+
+                    # 3. 遍歷並創建列表敘述
+                    list_items = []
+                    for drug, info in oral_data.items():
+                        # 組合您要求的單行敘述
+                        description = f"**{ward}-{info['床號']}** 查核藥品: {drug}, 病歷號: {info['病歷號']}, 應剩餘量: {info['應剩餘量']}, 實際剩餘量: {info['實際剩餘量']}, 查核結果: {info['是否符合']}, 不符合原因: {info['不符合原因']}"
+                        
+                        list_items.append(
+                            ListItem(Paragraph(description, chinese_style), leftIndent=20)
+                        )
+                    
+                    # 將列表 Flowable 加入 story
+                    if list_items:
+                        story.append(ListFlowable(
+                            list_items, 
+                            bulletType='label', 
+                            start='*', 
+                            bulletFontSize=9
+                        ))
+
+                else:
+                    # 顯示「否」
+                    oral_status_text = Paragraph("💊 本次查核口服管制藥品使用：否", chinese_style)
+                    story.append(oral_status_text)
+# ----------------------------------------------------------------------------------------------------以上為新增的口服PDF區塊
                 # 生成 PDF
                 doc.build(story)
                 pdf_buffer.seek(0)
@@ -665,6 +749,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
