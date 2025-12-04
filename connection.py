@@ -266,7 +266,7 @@ def main():
         st.session_state.oral_data = {}
     
     st.title("藥品庫存查核表")
-
+    oral_data = st.session_state.oral_data
     # 使用 st.empty() 創建一個佔位符
     date_input_container = st.empty()
 
@@ -317,7 +317,6 @@ def main():
                     "是否符合": "符合" if match else "不符合",
                     "不符合原因": reason,
                 }
-                oral_data = st.session_state.oral_data
                 st.success(f"{drug} 已加入紀錄 ✔")
     
         else:
@@ -635,6 +634,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
