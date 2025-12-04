@@ -411,6 +411,7 @@ def main():
             # 🚀 調試程式碼：檢查資料內容
             st.write("--- 口服資料調試 ---")
             oral_records = st.session_state.oral_data_records if 'oral_data_records' in st.session_state else []
+            df_oral = pd.DataFrame() # 初始化為空
             st.write(f"紀錄數量: {len(oral_records)}")
             st.write("--------------------")
 
@@ -418,15 +419,17 @@ def main():
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
 
-
             
-            df_oral = pd.DataFrame() # 初始化為空
             if oral_records:
                 df_oral = pd.DataFrame(oral_records)
-                # 補上單位欄位
-                df_oral.insert(0, '單位', ward) 
+                df_oral.insert(0, '單位', ward) # 補上單位欄位
             else:
                 st.warning("⚠ 口服藥品沒有任何資料")
+            
+            st.write("--- 最終提交資料調試 ---")
+            st.write(f"IV 藥品筆數: {len(df)}")
+            st.write(f"口服藥品筆數: {len(df_oral)}")
+            st.write("--------------------")
       
             
             
@@ -795,6 +798,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
