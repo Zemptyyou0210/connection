@@ -374,6 +374,13 @@ def main():
                 # 如果所有資料填寫完整，顯示成功信息
                 st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
                 st.write(data)  # 顯示提交的數據（如果需要）
+
+            # 🚀 調試程式碼：檢查資料內容
+            st.write("--- 口服資料調試 ---")
+            st.write(st.session_state.oral_data) # 顯示當前 session_state 的內容
+            st.write(f"資料長度: {len(st.session_state.oral_data)}")
+            st.write("--------------------")
+
             oral_data = st.session_state.oral_data
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
@@ -639,6 +646,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
