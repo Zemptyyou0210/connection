@@ -10,7 +10,6 @@ from openpyxl.drawing.image import Image as XLImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.platypus import ListFlowable, ListItem
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, ListItem, List
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as ReportLabImage
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -692,7 +691,7 @@ def main():
                         )
                     
                     # 4. 將列表加入 story (您可能漏掉了這一步驟)
-                    story.append(List(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
+                    story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
                     
                 else:
                     # 顯示「否」
@@ -750,6 +749,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
