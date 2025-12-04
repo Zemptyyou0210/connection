@@ -380,8 +380,8 @@ def main():
             if oral_data and len(oral_data) > 0:
                 for drug, info in oral_data.items():
                     # ... 寫入口服藥品資料到 df
-                else:
-                    st.warning("⚠ 口服藥品沒有任何資料") # 如果 session_state 裡是空的，這裡會顯示警告
+            else:
+                st.warning("⚠ 口服藥品沒有任何資料") # 如果 session_state 裡是空的，這裡會顯示警告
             # 創建文件名（不包含副檔名）
             file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
             
@@ -638,6 +638,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
