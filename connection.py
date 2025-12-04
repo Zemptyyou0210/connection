@@ -263,12 +263,11 @@ def create_drug_form(ward, drugs):
     return data, incomplete_drugs
 
 def main():
-    if "oral_data" not in st.session_state:
-        st.session_state.oral_data = {}
+    if "oral_data_records" not in st.session_state:
+        st.session_state.oral_data_records = []
     
     st.title("藥品庫存查核表")
-    oral_data = st.session_state.oral_data
-    # 使用 st.empty() 創建一個佔位符
+
     date_input_container = st.empty()
 
     # 獲取今天的日期
@@ -422,7 +421,10 @@ def main():
             
             if oral_records:
                 df_oral = pd.DataFrame(oral_records)
-                df_oral.insert(0, '單位', ward) # 補上單位欄位
+                # 補上所有缺少的欄位，以符合 Excel 寫入需求 (例如 日期, 查核藥師)
+                df_oral.insert(0, '單位', ward) 
+                df_oral['日期'] = selected_date.strftime("%Y/%m/%d")
+                df_oral['查核藥師'] = pharmacist
             else:
                 st.warning("⚠ 口服藥品沒有任何資料")
             
@@ -795,6 +797,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
