@@ -411,7 +411,7 @@ def main():
                     '常備量': WARD_DRUGS[ward][drug],
                     '現存量': info['現存量'],
                     '空瓶': info['空瓶'],
-                    '處方箋': info['處方箋'],
+                  '處方箋': info['處方箋'],
                     '效期>6個月': info['效期>6個月'],
                     '常備量=現存量+空瓶(空瓶量=處方箋量)': info['常備量=現存量+空瓶(空瓶量=處方箋量)'],
                     '日期': selected_date.strftime("%Y/%m/%d"),
@@ -547,28 +547,44 @@ def main():
                                 ]        
         
                     
-                # 添加藥品數據
-                for drug, info in data.items():
-        
-                    expiry_paragraph = Paragraph(str(info['效期>6個月']),chinese_style) # 讓「效期>6個月」自動換行
-                    stock_paragraph = Paragraph(str(info['常備量=現存量+空瓶(空瓶量=處方箋量)']),chinese_style)  # 讓「常備量=現存量+空瓶(空瓶量=處方箋量)」自動換行
-                    remark_paragraph = Paragraph(str(info['備註']), chinese_style)  # 讓「備註」自動換行
-                    ward_paragraph = Paragraph(str(ward), chinese_style)  # 讓「單位」自動換行
-                    row = [
+                                # 添加藥品數據
+                for index, row in df.iterrows(): # <--- 修正 1: 使用 df 進行迭代
+                    
+                    # 🚨 修正 2: 根據 df 的欄位名來讀取資料
+                    # 口服藥品的欄位可能為空 ('')，需要確保能處理
+                    
+                    # --- 處理 Paragraph 內容 (使用 row['欄位名稱'] 代替 info['...']) ---
+                    # 這裡的邏輯需要注意，口服藥品的某些欄位（如常備量、空瓶、處方箋、效期判斷）可能是空的
+                    
+                    # 確保所有轉換都使用 row['欄位名稱']
+                    expiry_paragraph = Paragraph(str(row['效期>6個月']), chinese_style)
+                    stock_paragraph = Paragraph(str(row['常備量=現存量+空瓶(空瓶量=處方箋量)']), chinese_style)
+                    remark_paragraph = Paragraph(str(row['備註']), chinese_style)
+                    ward_paragraph = Paragraph(str(ward), chinese_style) # 單位可能還是使用 ward 變數
+                
+                    item_name = row['常備品項'] # <--- 從 df 中取出藥品名稱
+                    
+                    # --- 組裝 row 列表 ---
+                    new_pdf_row = [
                         ward_paragraph, # 自動換行的「單位」
-                        Paragraph(drug, chinese_style),  # 藥品名稱也可以自動換行
-                        str(WARD_DRUGS[ward][drug]),
-                        str(info['現存量']),
-                        str(info['空瓶']),
-                        str(info['處方箋']),
-                        expiry_paragraph,  # 自動換行的「效期>6個月」
-                        stock_paragraph,  # 自動換行的「常備量=現存量+空瓶(空瓶量=處方箋量)」
+                        Paragraph(item_name, chinese_style), # 藥品名稱
+                        
+                        # 🚨 修正 3: 常備量需要從 df 讀取 (靜脈注射藥品有，口服藥品為空)
+                        str(row['常備量']),
+                        
+                        # 🚨 修正 4: 其他欄位皆從 df 讀取
+                        str(row['現存量']),
+                        str(row['空瓶']),
+                        str(row['處方箋']),
+                        stock_paragraph, # 自動換行的「常備量=現存量+空瓶(空瓶量=處方箋量)」
+                        expiry_paragraph, # 自動換行的「效期>6個月」
                         selected_date.strftime("%Y/%m/%d"),
-                        img,  # 自動換行的「被查核單位主管」
-                        pharmacist,
-                        remark_paragraph  # 自動換行的「備註」
+                        img, # 確保 img 是在迴圈外定義且可用的
+                        row['查核藥師'], # 從 df 讀取藥師名稱
+                        remark_paragraph # 自動換行的「備註」
                     ]
-                    table_data.append(row)
+                    
+                    table_data.append(new_pdf_row) # <--- 將包含靜脈和口服藥品的行添加到表格數據中
         
                 # 創建表格，調整列寬以適應 A4 橫向
                 available_width = page_height - 10*mm
@@ -649,6 +665,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
