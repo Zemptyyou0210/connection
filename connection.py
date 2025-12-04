@@ -299,7 +299,7 @@ def main():
         if used_any:
             drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug")
     
-            bed = st.text_input(f"床號 ({drug})", key=f"{ward}_oral_{drug}_bed")
+            bed = st.text_input(f"床號(填床號數字就好) ({drug})", key=f"{ward}_oral_{drug}_bed")
             mrn = st.text_input(f"病歷號 ({drug})", key=f"{ward}_oral_{drug}_mrn")
             expected = st.number_input(f"應剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_expected")
             actual = st.number_input(f"實際剩餘量 ({drug})", min_value=0, value=0, step=1, key=f"{ward}_oral_{drug}_actual")
@@ -661,7 +661,7 @@ def main():
                     ('ALIGN', (11, 2), (11, -1), 'LEFT'),  # 備註
                 ]))
         
-                story.append(table)
+
  # -----------------------------------------------------------------------------------------------以下為新增的口服PDF區塊
 
                 story.append(table) # IV 藥品表格結束
@@ -760,6 +760,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
