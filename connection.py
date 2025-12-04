@@ -479,19 +479,20 @@ def main():
                 for idx, col in enumerate(df.columns):
                     max_length = max(df[col].astype(str).map(len).max(), len(col))
                     worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
+                
                 # ----------------------------------------------------
-                # 寫入口服藥品到第二個 Sheet
-                # ----------------------------------------------------
-                if not df_oral.empty and len(df_oral) > 0:
-                    sheet_name_oral = '口服查核資料'
-                    df_oral.to_excel(writer, sheet_name=sheet_name_oral, index=False)
-                    
-                    # 調整 Oral Sheet 列寬
-                    worksheet_oral = writer.sheets[sheet_name_oral]
-                    for idx, col in enumerate(df_oral.columns):
-                        # 使用 df_oral 的欄位來計算長度
-                        max_length = max(df_oral[col].astype(str).map(len).max(), len(col))
-                        worksheet_oral.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
+                # 寫入口服藥品到第二個 Sheet
+                # ----------------------------------------------------
+                if not df_oral.empty and len(df_oral) > 0:
+                    sheet_name_oral = '口服查核資料'
+                    df_oral.to_excel(writer, sheet_name=sheet_name_oral, index=False)
+                    
+                    # 調整 Oral Sheet 列寬
+                    worksheet_oral = writer.sheets[sheet_name_oral]
+                    for idx, col in enumerate(df_oral.columns):
+                        # 使用 df_oral 的欄位來計算長度
+                        max_length = max(df_oral[col].astype(str).map(len).max(), len(col))
+                        worksheet_oral.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
 
                 
                 # 將簽名保存為圖片
@@ -749,6 +750,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
