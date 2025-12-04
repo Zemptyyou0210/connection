@@ -410,20 +410,23 @@ def main():
 
             # 🚀 調試程式碼：檢查資料內容
             st.write("--- 口服資料調試 ---")
-            st.write(st.session_state.oral_data) # 顯示當前 session_state 的內容
-            st.write(f"資料長度: {len(st.session_state.oral_data)}")
+            oral_records = st.session_state.oral_data_records if 'oral_data_records' in st.session_state else []
+            st.write(f"紀錄數量: {len(oral_records)}")
             st.write("--------------------")
 
-            oral_records = st.session_state.oral_data_records if 'oral_data_records' in st.session_state else []
+      
             # 使用選擇的日期
             file_date = selected_date.strftime("%Y.%m.%d")
-            if oral_data and len(oral_data) > 0:
-                for drug, info in oral_data.items(): 
-                                # ... 寫入口服藥品資料到 df
-                    pass # 確保 for 迴圈裡有內容
-                    
+
+
+            
+            df_oral = pd.DataFrame() # 初始化為空
+            if oral_records:
+                df_oral = pd.DataFrame(oral_records)
+                # 補上單位欄位
+                df_oral.insert(0, '單位', ward) 
             else:
-                st.warning("⚠ 口服藥品沒有任何資料") # 如果 session_state 裡是空的，這裡會顯示警告
+                st.warning("⚠ 口服藥品沒有任何資料")
       
             
             
@@ -792,6 +795,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
