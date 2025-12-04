@@ -477,7 +477,7 @@ def main():
                                 
             #         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
 
-            oral_records = []
+    
             if oral_data and len(oral_data) > 0:
                 for drug, info in oral_data.items():
                     oral_records.append({
@@ -795,6 +795,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
