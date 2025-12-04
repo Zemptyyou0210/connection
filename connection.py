@@ -480,7 +480,7 @@ def main():
                     max_length = max(df[col].astype(str).map(len).max(), len(col))
                     worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
                 # ----------------------------------------------------
-                # 【新增】寫入口服藥品 (Oral) 到第二個 Sheet
+                # 寫入口服藥品到第二個 Sheet
                 # ----------------------------------------------------
                 if not df_oral.empty and len(df_oral) > 0:
                     sheet_name_oral = '口服查核資料'
@@ -663,7 +663,7 @@ def main():
                 story.append(table)
  # -----------------------------------------------------------------------------------------------以下為新增的口服PDF區塊
                 # ==============================================
-                #【新增】口服管制藥品使用查核區塊
+                #口服管制藥品使用查核區塊
                 # ==============================================
                 
                 # 假設 oral_data 變數在上方已經定義並從 st.session_state 取得最新資料
@@ -749,6 +749,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
