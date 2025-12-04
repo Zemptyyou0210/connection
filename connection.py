@@ -407,105 +407,60 @@ def main():
                 st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
                 st.write(data)  # 顯示提交的數據（如果需要）
 
-            # 🚀 調試程式碼：檢查資料內容
-            st.write("--- 口服資料調試 ---")
-            oral_records = st.session_state.oral_data_records if 'oral_data_records' in st.session_state else []
-            df_oral = pd.DataFrame() # 初始化為空
-            st.write(f"紀錄數量: {len(oral_records)}")
-            st.write("--------------------")
+# ----------------------------------------------------
+            # 🚀 數據準備區塊 (IV 藥品: df / 口服藥品: df_oral)
+            # ----------------------------------------------------
 
-      
-            # 使用選擇的日期
+            # 1. 取得日期和文件名
             file_date = selected_date.strftime("%Y.%m.%d")
-
-            
-            if oral_records:
-                # 2. 直接創建 df_oral，並補上通用欄位
-                df_oral = pd.DataFrame(oral_records)
-                # 補上單位、日期和查核藥師欄位
-                df_oral.insert(0, '單位', ward) 
-                df_oral['日期'] = selected_date.strftime("%Y/%m/%d")
-                df_oral['查核藥師'] = pharmacist
-
-            else:
-                st.warning("⚠ 口服藥品沒有任何資料")
-            
-
-      
-            
-            
-            # 創建文件名（不包含副檔名）
             file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
-            
-            # 創建 Excel 和 PDF 文件名
             excel_filename = f"{file_base_name}.xlsx"
             pdf_filename = f"{file_base_name}.pdf"
-        
-            # 創建 DataFrame
-            df = pd.DataFrame(columns=['單位', '常備品項', '常備量', '現存量', '空瓶', '處方箋', '效期>6個月', '常備量=現存量+空瓶(空瓶量=處方箋量)', '日期', '被查核單位主管', '查核藥師', '備註'])
             
+            # 2. 創建 IV 藥品 DataFrame (df) - 保持您的邏輯不變
+            df_rows = []
             for drug, info in data.items():
-                row = {
+                df_rows.append({
                     '單位': ward,
                     '常備品項': drug,
                     '常備量': WARD_DRUGS[ward][drug],
                     '現存量': info['現存量'],
                     '空瓶': info['空瓶'],
-                  '處方箋': info['處方箋'],
+                    '處方箋': info['處方箋'],
                     '效期>6個月': info['效期>6個月'],
                     '常備量=現存量+空瓶(空瓶量=處方箋量)': info['常備量=現存量+空瓶(空瓶量=處方箋量)'],
                     '日期': selected_date.strftime("%Y/%m/%d"),
-                    '被查核單位主管': '',  # 這裡留空，因為簽名會單獨放在另一個工作表
+                    '被查核單位主管': '',
                     '查核藥師': pharmacist,
                     '備註': info['備註']
-                }
-                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-
-            # 本來將針劑跟口服合成同一個dataframe用
-            # if oral_data and len(oral_data) > 0:
-            #     for drug, info in oral_data.items():
-            #         row = {
-            #             '單位': ward,
-            #             '常備品項': drug,
-            #             '常備量': '',  # 口服藥沒有常備量，可以留空
-            #             '現存量': info['應剩餘量'],
-            #             '空瓶': '',
-            #             '處方箋': '',
-            #             '效期>6個月': '',
-            #             '常備量=現存量+空瓶(空瓶量=處方箋量)': '',
-            #             '日期': selected_date.strftime("%Y/%m/%d"),
-            #             '被查核單位主管': '',
-            #             '查核藥師': pharmacist,
-            #             '備註': f"實際剩餘: {info['實際剩餘量']}, 是否符合: {info['是否符合']}, 原因: {info['不符合原因']}"
-            #         }                
-                                
-            #         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
-
-    
-            if oral_data and len(oral_data) > 0:
-                for drug, info in oral_data.items():
-                    oral_records.append({
-                        '單位': ward, 
-                        '查核藥品': drug,
-                        '床號': info['床號'],
-                        '病歷號': info['病歷號'],
-                        '應剩餘量': info['應剩餘量'],
-                        '實際剩餘量': info['實際剩餘量'],
-                        '查核結果': info['是否符合'],
-                        '不符合原因': info['不符合原因'],
-                        '日期': selected_date.strftime("%Y/%m/%d"),
-                        '查核藥師': pharmacist
-                    })
+                })
+            df = pd.DataFrame(df_rows)
             
-                # 創建口服藥品專用的 DataFrame
+            # 3. 創建 口服藥品 DataFrame (df_oral) - 修正後的邏輯
+            
+            # 讀取正確的紀錄列表
+            oral_records = st.session_state.oral_data_records if 'oral_data_records' in st.session_state else []
+            df_oral = pd.DataFrame() # 初始化 df_oral
+
+            st.write("--- 口服資料調試 ---")
+            st.write(f"紀錄數量: {len(oral_records)}")
+            st.write("--------------------")
+
+            if oral_records:
+                # 確保 df_oral 使用正確的 List of Dicts
                 df_oral = pd.DataFrame(oral_records)
+                # 補上通用欄位
+                df_oral.insert(0, '單位', ward) 
+                df_oral['日期'] = selected_date.strftime("%Y/%m/%d")
+                df_oral['查核藥師'] = pharmacist
             else:
-                # 如果沒有口服資料，創建一個空的 DataFrame 以避免錯誤
+                # 創建空的 df_oral，帶有所有欄位名稱
                 df_oral = pd.DataFrame(columns=[
                     '單位', '查核藥品', '床號', '病歷號', 
                     '應剩餘量', '實際剩餘量', '查核結果', 
                     '不符合原因', '日期', '查核藥師'
                 ])
+                st.warning("⚠ 口服藥品沒有任何資料")
 
             
             # 保存為 Excel 文件
@@ -799,6 +754,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
