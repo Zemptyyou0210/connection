@@ -389,8 +389,8 @@ def main():
                                 # ... 寫入口服藥品資料到 df
                     pass # 確保 for 迴圈裡有內容
                     
-            # 這段可能有錯誤else:
-            #     st.warning("⚠ 口服藥品沒有任何資料") # 如果 session_state 裡是空的，這裡會顯示警告
+            else:
+                st.warning("⚠ 口服藥品沒有任何資料") # 如果 session_state 裡是空的，這裡會顯示警告
       
             
             
@@ -439,8 +439,7 @@ def main():
                     }                
                                 
                     df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)                            
-                else:
-                    st.warning("⚠ 口服藥品沒有任何資料")
+
 
             
             # 保存為 Excel 文件
@@ -650,6 +649,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
