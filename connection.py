@@ -714,12 +714,13 @@ def main():
                         )
                                         
                     # 4. 將列表加入 story (您可能漏掉了這一步驟)
-                    # story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
-                    if RLList is not None:
-                        story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
-                    else:
-                        # 如果匯入失敗，我們至少可以在 PDF 中留下一個文字訊息
-                        story.append(Paragraph("【錯誤：口服藥品列表模組載入失敗，無法生成列表。】", chinese_style))
+                    story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
+                    
+                    # if RLList is not None:
+                    #     story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
+                    # else:
+                    #     # 如果匯入失敗，我們至少可以在 PDF 中留下一個文字訊息
+                    #     story.append(Paragraph("【錯誤：口服藥品列表模組載入失敗，無法生成列表。】", chinese_style))
 
                 
                 else:
@@ -778,6 +779,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
