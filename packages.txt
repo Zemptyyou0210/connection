@@ -1,3 +1,2 @@
-# ReportLab 可能需要的系統依賴
 libjpeg-dev
 zlib1g-dev
