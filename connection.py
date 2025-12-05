@@ -41,10 +41,10 @@ logging.basicConfig(level=logging.INFO)
 
 # 定義不同病房的藥品列表和庫存限制
 WARD_DRUGS = {
-    # "測試用選單": {
-    #     "Morphine HCl 10mg/1mL/Amp":5,
-    #     "Midazolam 15mg/3mL/Amp":5
-    # },
+    "測試用選單": {
+        "Morphine HCl 10mg/1mL/Amp":5,
+        "Midazolam 15mg/3mL/Amp":5
+    },
     
     
     
@@ -811,6 +811,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
