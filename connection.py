@@ -721,7 +721,8 @@ def main():
                             f"結果: **{row['是否符合']}** (應剩餘量: {row['應剩餘量']}, 實際剩餘量: {row['實際剩餘量']})."
                             # ✅ 關鍵修正：將 reason_clause 條件式加入
                             f"{reason_clause}" 
-                            f"查核人-日期: {row['查核藥師']} - {row['日期']}"
+                            f"日期: {row['日期']}"
+                            f"查核藥師: {row['查核藥師']}"
                         )
                                             
                         list_items.append(
@@ -803,6 +804,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
