@@ -265,11 +265,13 @@ def create_drug_form(ward, drugs):
 
 def main():
 # ----------------------------------------------------
-    # ✅ 關鍵最終修正：強制局部匯入並使用別名
+    # ✅ 關鍵最終修正：嘗試使用 ListFlowable 及其子類別
     try:
-        from reportlab.platypus import List as RLList, ListItem as RLListItem
+        # 🚨 修正：直接從 reportlab.platypus 匯入 List 和 ListItem
+        from reportlab.platypus.flowables import ListFlowable as RLList 
+        from reportlab.platypus.listparagraphs import ListItem as RLListItem
     except ImportError:
-        # 如果 ReportLab 沒裝好，我們至少避免應用程式崩潰
+        # 如果 ReportLab 列表模組匯入仍然失敗
         st.error("🚨 錯誤：ReportLab 列表模組匯入失敗，請檢查環境設定。")
         RLList = None
         RLListItem = None
@@ -771,6 +773,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
