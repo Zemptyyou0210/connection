@@ -272,17 +272,17 @@ def create_drug_form(ward, drugs):
     return data, incomplete_drugs
 
 def main():
-# ----------------------------------------------------
-    # ✅ 關鍵最終修正：嘗試使用 ListFlowable 及其子類別
-    try:
-        # 🚨 修正：直接從 reportlab.platypus 匯入 List 和 ListItem
-        from reportlab.platypus.flowables import ListFlowable as RLList 
-        from reportlab.platypus.listparagraphs import ListItem as RLListItem
-    except ImportError:
-        # 如果 ReportLab 列表模組匯入仍然失敗
-        st.error("🚨 錯誤：ReportLab 列表模組匯入失敗，請檢查環境設定。")
-        RLList = None
-        RLListItem = None
+# # ----------------------------------------------------
+#     # ✅ 關鍵最終修正：嘗試使用 ListFlowable 及其子類別
+#     try:
+#         # 🚨 修正：直接從 reportlab.platypus 匯入 List 和 ListItem
+#         from reportlab.platypus.flowables import ListFlowable as RLList 
+#         from reportlab.platypus.listparagraphs import ListItem as RLListItem
+#     except ImportError:
+#         # 如果 ReportLab 列表模組匯入仍然失敗
+#         st.error("🚨 錯誤：ReportLab 列表模組匯入失敗，請檢查環境設定。")
+#         RLList = None
+#         RLListItem = None
     
     
     if "oral_data_records" not in st.session_state:
@@ -781,6 +781,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
