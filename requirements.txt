@@ -3,9 +3,10 @@ openpyxl
 pandas
 datetime
 Pillow
-reportlab # Force deploy），然後儲存。
+reportlab==3.6.12 
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 google-api-python-client
 logging
+# Force deploy），然後儲存。
