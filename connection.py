@@ -713,7 +713,7 @@ def main():
                             f" 不符合原因: {row['不符合原因']}. "
                             if is_not_match and row['不符合原因']
                             else ""
-                                
+                        )            
                         # ✅ 關鍵修正：組合完整敘述，包含所有重要欄位
                         description = (
                             f"**{row['單位']}-{row['床號']} (病歷號: {row['病歷號']})** "
@@ -803,6 +803,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
