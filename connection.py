@@ -705,13 +705,23 @@ def main():
                     
                     # 🚨 關鍵修正：使用 df_oral.iterrows() 遍歷
                     for index, row in df_oral.iterrows():
+                          # 1. 判斷是否「不符合」
+                        is_not_match = row['是否符合'] == "不符合"
+                        
+                        # 2. 只有在不符合時才建立「不符合原因」的子句，否則為空字串
+                        reason_clause = (
+                            f" 不符合原因: {row['不符合原因']}. "
+                            if is_not_match and row['不符合原因']
+                            else ""
+                                
                         # ✅ 關鍵修正：組合完整敘述，包含所有重要欄位
                         description = (
                             f"**{row['單位']}-{row['床號']} (病歷號: {row['病歷號']})** "
                             f"查核藥品: {row['查核藥品']}. "
-                            f"結果: **{row['是否符合']}** (應剩餘量: {row['應剩餘量']}, 實際剩餘量: {row['實際剩餘量']}). "
-                            f"不符合原因: {row['不符合原因']}. "
-                            f"查核人/日期: {row['查核藥師']} / {row['日期']}"
+                            f"結果: **{row['是否符合']}** (應剩餘量: {row['應剩餘量']}, 實際剩餘量: {row['實際剩餘量']})."
+                            # ✅ 關鍵修正：將 reason_clause 條件式加入
+                            f"{reason_clause}" 
+                            f"查核人-日期: {row['查核藥師']} - {row['日期']}"
                         )
                                             
                         list_items.append(
@@ -793,6 +803,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
