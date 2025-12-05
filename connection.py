@@ -9,15 +9,15 @@ import openpyxl
 from openpyxl.drawing.image import Image as XLImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-# from reportlab.platypus import ListFlowable, ListItem
-from reportlab.platypus import (
-    SimpleDocTemplate, 
-    Table, 
-    TableStyle, 
-    Paragraph, 
-    Spacer, 
-    Image as ReportLabImage
-)
+from reportlab.platypus import ListFlowable, ListItem
+# from reportlab.platypus import (
+#     SimpleDocTemplate, 
+#     Table, 
+#     TableStyle, 
+#     Paragraph, 
+#     Spacer, 
+#     Image as ReportLabImage
+# )
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as ReportLabImage
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -781,6 +781,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
