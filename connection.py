@@ -714,8 +714,9 @@ def main():
                         )
                                         
                     # 4. 將列表加入 story (您可能漏掉了這一步驟)
-                    story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
-                    
+                    story.append(ListFlowable(list_items, leftIndent=18)) # ✅ 正確使用全局匯入的 ListFlowable 類
+                   
+                
                     # if RLList is not None:
                     #     story.append(RLList(list_items, leftIndent=18)) # 使用 ReportLab 的 List 類
                     # else:
@@ -779,6 +780,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
