@@ -698,7 +698,8 @@ def main():
                         description = f"**{row['單位']}-{row['床號']}** 查核藥品: {row['查核藥品']}, 病歷號: {row['病歷號']}, 應剩餘量: {row['應剩餘量']}, 實際剩餘量: {row['實際剩餘量']}, 查核結果: {row['是否符合']}, 不符合原因: {row['不符合原因']}"
                         
                         list_items.append(
-                            ListItem(Paragraph(description, chinese_style), leftIndent=20)
+                            # 🚨 關鍵修正：將 ListItem 替換為 RLListItem
+                            RLListItem(Paragraph(description, chinese_style), leftIndent=20)
                         )
                     
                     # 4. 將列表加入 story (您可能漏掉了這一步驟)
@@ -766,6 +767,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
