@@ -414,27 +414,28 @@ def main():
     # ✅【調試訊息】檢查 canvas 簽名 & 藥師選擇
         st.write(f"Debug: canvas_result.image_data is None: {canvas_result.image_data is None}")
         st.write(f"Debug: pharmacist: {pharmacist}")
+        is_valid = True
 
         # ✅【1】檢查畫布是否有簽名
         if canvas_result.image_data is None or np.all(canvas_result.image_data == [255, 255, 255, 255]):  # 全白色表示沒有簽名
-            st.error("請在畫布上簽名")
+            st.error("❌ 請在畫布上簽名")
+            is_valid = False
 
     
         # ✅【2】檢查是否選擇了藥師
-        elif not pharmacist:
-            st.error("請選擇查核藥師")
+        if pharmacist == "請選擇藥師" or pharmacist.strip() == "":
+                st.error("❌ 請選擇查核藥師")
+                is_valid = False
 
     
         # ✅【3】檢查是否有未填寫的藥品資料
-        elif canvas_result.image_data is not None and pharmacist:
-            # 檢查是否有未填寫的藥品資料
-            if incomplete_drugs:
+        if incomplete_drugs:
                 st.warning(f"🚨 以下藥品資料尚未填寫完整：{', '.join(incomplete_drugs)}")
-                st.stop()  # 停止繼續執行，強制要求填寫完整資料
-            else:
-                # 如果所有資料填寫完整，顯示成功信息
-                st.success("✅ 所有藥品資料已填寫完成！表單已成功送出。")
-                st.write(data)  # 顯示提交的數據（如果需要）
+                is_valid = False
+# 🚀 只有所有檢查都通過 (is_valid == True)，才會執行下方的送出流程
+        # ========================================================
+        if is_valid:
+            st.success(f"✅ 驗證成功！藥師 **{pharmacist}** 已完成提交。")
 
 # ----------------------------------------------------
             # 🚀 數據準備區塊 (IV 藥品: df / 口服藥品: df_oral)
@@ -811,6 +812,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
