@@ -295,7 +295,7 @@ def main():
     if "oral_data_records" not in st.session_state:
         st.session_state.oral_data_records = []
     
-    st.title("藥品庫存查核表")
+    st.title("單位1-4級管制藥品月查核表")
 
     date_input_container = st.empty()
 
@@ -443,7 +443,7 @@ def main():
 
             # 1. 取得日期和文件名
             file_date = selected_date.strftime("%Y.%m.%d")
-            file_base_name = f"{file_date}_{ward}_藥品庫存查核表"
+            file_base_name = f"{file_date}_{ward}_單位1-4級管制藥品月查核表"
             excel_filename = f"{file_base_name}.xlsx"
             pdf_filename = f"{file_base_name}.pdf"
             
@@ -496,10 +496,10 @@ def main():
             # 保存為 Excel 文件
             excel_buffer = io.BytesIO()
             with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name='藥品庫存查核', index=False)
+                df.to_excel(writer, sheet_name='單位1-4級管制藥品月查核表', index=False)
                 
                 # 調整列寬
-                worksheet = writer.sheets['藥品庫存查核']
+                worksheet = writer.sheets['單位1-4級管制藥品月查核表']
                 for idx, col in enumerate(df.columns):
                     max_length = max(df[col].astype(str).map(len).max(), len(col))
                     worksheet.column_dimensions[openpyxl.utils.get_column_letter(idx+1)].width = max_length + 2
@@ -565,7 +565,7 @@ def main():
         
                 # 添加查核時間、標題和修訂日期
                 check_time = Paragraph("查核時間 : " + selected_date.strftime("%Y/%m/%d"), revision_style)  # 查核時間
-                report_title = Paragraph("<b>單位庫存 1-4 級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
+                report_title = Paragraph("<b>單位1-4級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
                 update_time = Paragraph("更新時間 : 2025.12.04", revision_style)
         
                 
@@ -812,6 +812,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
