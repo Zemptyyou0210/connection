@@ -9,4 +9,5 @@ google-auth-oauthlib
 google-auth-httplib2
 google-api-python-client
 logging
+altair
 # Force deploy），然後儲存。
