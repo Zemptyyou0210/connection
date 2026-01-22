@@ -75,8 +75,8 @@ WARD_DRUGS = {
     },
     
    "內視鏡": {
-       "Fentanyl(0.05mg/mL) 2mL/Amp":30,
-       "MIDazolam 五mg/mL/Amp":30
+       "Fentanyl(0.05mg/mL) 2mL/Amp":40, #2026.01.22修改30->40
+       "MIDazolam 五mg/mL/Amp":40        #2026.01.22修改30->40
     },
     
    "胸腔科檢查室": {
@@ -812,6 +812,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
