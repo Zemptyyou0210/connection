@@ -326,25 +326,21 @@ def main():
     
         if used_any:
             st.subheader("💊 新增口服藥品使用紀錄")
-            
+    
             # 1. 紀錄輸入欄位
             col1, col2 = st.columns(2)
             with col1:
-                # 選擇查核藥品
                 current_drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug_input")
-                # 病人資訊
-                current_bed = st.text_input(f"床號(填床號數字就好)", key=f"{ward}_oral_input_bed")
-                current_mrn = st.text_input(f"病歷號", key=f"{ward}_oral_input_mrn")
-                
+                current_bed = st.text_input("床號(填床號數字就好)", key=f"{ward}_oral_input_bed")
+                current_mrn = st.text_input("病歷號", key=f"{ward}_oral_input_mrn")
+    
             with col2:
-                # 剩餘量查核
-                current_expected = st.number_input(f"應剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_expected")
-                current_actual = st.number_input(f"實際剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_actual")
-                
+                current_expected = st.number_input("應剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_expected")
+                current_actual = st.number_input("實際剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_actual")
                 match = (current_expected == current_actual)
                 current_reason = "" if match else st.text_area("不符合原因", key=f"{ward}_oral_input_reason")
     
-            # 2. 添加按鈕邏輯
+            # 2. 添加紀錄按鈕
             if st.button(f"➕ 添加 {current_drug} 查核紀錄", key=f"{ward}_add_oral_record"):
                 if not current_bed or not current_mrn:
                     st.warning("請輸入床號和病歷號。")
@@ -360,28 +356,37 @@ def main():
                     }
                     st.session_state.oral_data_records.append(new_record)
                     st.success(f"已成功添加 {current_drug} / 床號 {current_bed} 的紀錄。")
-                    # 重新運行以清空輸入欄位，準備下一筆資料
-                    st.experimental_rerun()
-            
+    
+                    # ✅ 清空欄位
+                    st.session_state[f"{ward}_oral_input_bed"] = ""
+                    st.session_state[f"{ward}_oral_input_mrn"] = ""
+                    st.session_state[f"{ward}_oral_input_expected"] = 0
+                    st.session_state[f"{ward}_oral_input_actual"] = 0
+                    st.session_state[f"{ward}_oral_input_reason"] = ""
+    
             st.markdown("---")
             st.subheader("📝 已記錄的口服藥品查核清單")
-            
+    
             # 3. 顯示/刪除紀錄列表
             if st.session_state.oral_data_records:
-                # 將列表轉換為 DataFrame 顯示，更清晰
                 df_display = pd.DataFrame(st.session_state.oral_data_records)
+    
+                # 避免 LargeUtf8 前端錯誤：截斷長字串
+                for col in df_display.select_dtypes(include=["object"]).columns:
+                    df_display[col] = df_display[col].astype(str).str.slice(0, 500)
+    
                 st.dataframe(df_display, use_container_width=True)
-                
-                # 提供刪除功能 (可選)
+    
+                # 提供刪除功能
                 if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
                     st.session_state.oral_data_records = []
-                    st.experimental_rerun()
+                    st.success("已清空所有紀錄。")
             else:
                 st.info("目前沒有任何口服藥品使用紀錄。")
     
         else:
             st.info("本病房未使用口服管制藥品，可跳過查核")
-            st.session_state.oral_data_records = [] # 如果取消勾選，清空紀錄
+            st.session_state.oral_data_records = []  # 取消勾選時清空紀錄
 
     # ------------------------------------------------------------------------------------------------
     
