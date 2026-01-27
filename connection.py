@@ -321,17 +321,13 @@ def main():
 
     # ------------------------------------------------------------------------------------------------
     
-
-   
- 
-    # 1️⃣ 初始化 session_state
- 
+    
     if "oral_data_records" not in st.session_state:
         st.session_state.oral_data_records = []
     
-
+    
     # 2️⃣ 口服藥品查核 expander
-
+    
     with st.expander(f"{ward} 口服管制藥品查核"):
     
         used_any = st.checkbox(
@@ -429,7 +425,7 @@ def main():
     
         else:
             st.info("本病房未使用口服管制藥品，可跳過查核")
-            st.session_state.oral_data_records = []  # 取消勾選時清空紀錄
+            st.session_state.oral_data_records = []  # 取消勾選時清空紀錄# 取消勾選時清空紀錄
 
     # ------------------------------------------------------------------------------------------------
     
@@ -860,6 +856,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
