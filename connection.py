@@ -321,15 +321,18 @@ def main():
 
     # ------------------------------------------------------------------------------------------------
     
+
+    if "oral_data_records" not in st.session_state:
+        st.session_state.oral_data_records = []
+    
     with st.expander(f"{ward} 口服管制藥品查核"):
-        # 單位是否有使用口服管制藥品
         used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
     
         if used_any:
             st.subheader("💊 新增口服藥品使用紀錄")
     
             # -----------------------------
-            # 1️⃣ 輸入欄位 (直接用 value 初始化，安全)
+            # 1️⃣ 輸入欄位
             # -----------------------------
             col1, col2 = st.columns(2)
             with col1:
@@ -359,9 +362,6 @@ def main():
                         "是否符合": "符合" if match else "不符合",
                         "不符合原因": current_reason,
                     }
-                    # 初始化列表
-                    if "oral_data_records" not in st.session_state:
-                        st.session_state.oral_data_records = []
                     st.session_state.oral_data_records.append(new_record)
                     st.success(f"已成功添加 {current_drug} / 床號 {current_bed} 的紀錄。")
     
@@ -369,21 +369,19 @@ def main():
             st.subheader("📝 已記錄的口服藥品查核清單")
     
             # -----------------------------
-            # 3️⃣ 顯示/刪除紀錄列表
+            # 3️⃣ 顯示紀錄列表 (安全)
             # -----------------------------
-            if "oral_data_records" in st.session_state and st.session_state.oral_data_records:
-                # 只顯示摘要文字，避免 LargeUtf8
+            if st.session_state.oral_data_records:
                 df_display = pd.DataFrame(st.session_state.oral_data_records)
+    
+                # 對長文字欄位做截斷（前 50 字）
                 for col in df_display.select_dtypes(include=["object"]).columns:
-                    if col == "不符合原因":
-                        df_display[col] = df_display[col].astype(str).str.slice(0, 100)  # 前100字顯示
-                    else:
-                        df_display[col] = df_display[col].astype(str)
+                    df_display[col] = df_display[col].astype(str).str.slice(0, 50)
     
                 st.dataframe(df_display, use_container_width=True)
     
-                # 展示完整「不符合原因」文字
-                for idx, record in enumerate(st.session_state.oral_data_records):
+                # 顯示完整「不符合原因」
+                for record in st.session_state.oral_data_records:
                     if record.get("不符合原因"):
                         with st.expander(f"床號 {record['床號']} / 藥品 {record['查核藥品']} 的完整不符合原因"):
                             st.write(record["不符合原因"])
@@ -829,6 +827,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
