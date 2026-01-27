@@ -393,26 +393,21 @@ def main():
             st.markdown("---")
             st.subheader("📝 已記錄的口服藥品查核清單")
     
-            # -----------------------------
+        
             # 3️⃣ 顯示紀錄列表 (安全版)
-            # -----------------------------
+       
             if st.session_state.oral_data_records:
     
-                df_display = pd.DataFrame(st.session_state.oral_data_records)
-    
-                # 對所有文字欄位做截斷，避免 LargeUtf8
-                for col in df_display.select_dtypes(include=["object"]).columns:
-                    df_display[col] = df_display[col].astype(str).str.slice(0, 50)
-    
-                st.dataframe(df_display, use_container_width=True)
-    
-                # 用 expander 顯示完整「不符合原因」
-                for record in st.session_state.oral_data_records:
-                    if record.get("不符合原因"):
-                        with st.expander(
-                            f"床號 {record['床號']} / 藥品 {record['查核藥品']} 的完整不符合原因"
-                        ):
-                            st.write(record["不符合原因"])
+
+            df_display = pd.DataFrame(st.session_state.oral_data_records)
+            for col in df_display.select_dtypes(include=["object"]).columns:
+                df_display[col] = df_display[col].astype(str).str.slice(0, 50)
+            st.dataframe(df_display, use_container_width=True)
+            
+            for record in st.session_state.oral_data_records:
+                if record.get("不符合原因"):
+                    with st.expander(f"床號 {record['床號']} / 藥品 {record['查核藥品']} 的完整不符合原因"):
+                        st.write(record["不符合原因"])
     
                 # 清空所有紀錄
                 if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
@@ -856,6 +851,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
