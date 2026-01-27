@@ -399,24 +399,24 @@ def main():
             if st.session_state.oral_data_records:
     
 
-            df_display = pd.DataFrame(st.session_state.oral_data_records)
-            for col in df_display.select_dtypes(include=["object"]).columns:
-                df_display[col] = df_display[col].astype(str).str.slice(0, 50)
-            st.dataframe(df_display, use_container_width=True)
-            
-            for record in st.session_state.oral_data_records:
-                if record.get("不符合原因"):
-                    with st.expander(f"床號 {record['床號']} / 藥品 {record['查核藥品']} 的完整不符合原因"):
-                        st.write(record["不符合原因"])
-    
-                # 清空所有紀錄
-                if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
-                    st.session_state.oral_data_records = []
-                    st.success("已清空所有紀錄。")
-                    st.experimental_rerun()
-    
-            else:
-                st.info("目前沒有任何口服藥品使用紀錄。")
+                df_display = pd.DataFrame(st.session_state.oral_data_records)
+                for col in df_display.select_dtypes(include=["object"]).columns:
+                    df_display[col] = df_display[col].astype(str).str.slice(0, 50)
+                st.dataframe(df_display, use_container_width=True)
+                
+                for record in st.session_state.oral_data_records:
+                    if record.get("不符合原因"):
+                        with st.expander(f"床號 {record['床號']} / 藥品 {record['查核藥品']} 的完整不符合原因"):
+                            st.write(record["不符合原因"])
+        
+                    # 清空所有紀錄
+                    if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
+                        st.session_state.oral_data_records = []
+                        st.success("已清空所有紀錄。")
+                        st.experimental_rerun()
+        
+                else:
+                    st.info("目前沒有任何口服藥品使用紀錄。")
     
         else:
             st.info("本病房未使用口服管制藥品，可跳過查核")
@@ -851,6 +851,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
