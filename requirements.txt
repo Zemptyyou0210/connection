@@ -1,6 +1,5 @@
 streamlit_drawable_canvas
 openpyxl
-pandas
 datetime
 Pillow
 reportlab==3.6.12 
@@ -10,5 +9,7 @@ google-auth-httplib2
 google-api-python-client
 logging
 altair<5
+streamlit==1.31.0
+pandas>=2.0.0
 pyarrow>=14.0.0
 # Force deploy），然後儲存。
