@@ -329,36 +329,22 @@ def main():
             st.subheader("💊 新增口服藥品使用紀錄")
     
             # -----------------------------
-            # 1️⃣ 初始化 Session State
-            # -----------------------------
-            for key, default in [
-                ("bed", ""),
-                ("mrn", ""),
-                ("expected", 0),
-                ("actual", 0),
-                ("reason", "")
-            ]:
-                state_key = f"{ward}_oral_input_{key}"
-                if state_key not in st.session_state:
-                    st.session_state[state_key] = default
-    
-            # -----------------------------
-            # 2️⃣ 輸入欄位 (用 key 控制，不傳 value)
+            # 1️⃣ 輸入欄位 (直接用 value 初始化，安全)
             # -----------------------------
             col1, col2 = st.columns(2)
             with col1:
                 current_drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug_input")
-                current_bed = st.text_input("床號(填床號數字就好)", key=f"{ward}_oral_input_bed")
-                current_mrn = st.text_input("病歷號", key=f"{ward}_oral_input_mrn")
+                current_bed = st.text_input("床號(填床號數字就好)", value="", key=f"{ward}_oral_input_bed")
+                current_mrn = st.text_input("病歷號", value="", key=f"{ward}_oral_input_mrn")
     
             with col2:
-                current_expected = st.number_input("應剩餘量", min_value=0, step=1, key=f"{ward}_oral_input_expected")
-                current_actual = st.number_input("實際剩餘量", min_value=0, step=1, key=f"{ward}_oral_input_actual")
+                current_expected = st.number_input("應剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_expected")
+                current_actual = st.number_input("實際剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_actual")
                 match = (current_expected == current_actual)
-                current_reason = st.text_area("不符合原因", key=f"{ward}_oral_input_reason") if not match else ""
+                current_reason = st.text_area("不符合原因", value="", key=f"{ward}_oral_input_reason") if not match else ""
     
             # -----------------------------
-            # 3️⃣ 新增紀錄按鈕
+            # 2️⃣ 新增紀錄按鈕
             # -----------------------------
             if st.button(f"➕ 添加 {current_drug} 查核紀錄", key=f"{ward}_add_oral_record"):
                 if not current_bed or not current_mrn:
@@ -373,20 +359,20 @@ def main():
                         "是否符合": "符合" if match else "不符合",
                         "不符合原因": current_reason,
                     }
+                    # 初始化列表
                     if "oral_data_records" not in st.session_state:
                         st.session_state.oral_data_records = []
                     st.session_state.oral_data_records.append(new_record)
                     st.success(f"已成功添加 {current_drug} / 床號 {current_bed} 的紀錄。")
     
-                    # ✅ 清空輸入欄位
-                    for key in ["bed", "mrn", "expected", "actual", "reason"]:
-                        st.session_state[f"{ward}_oral_input_{key}"] = "" if key in ["bed","mrn","reason"] else 0
+                    # ✅ 新增紀錄後自動清空欄位
+                    # 透過 widget value 初始化即可，無需 st.session_state[key] 覆寫
     
             st.markdown("---")
             st.subheader("📝 已記錄的口服藥品查核清單")
     
             # -----------------------------
-            # 4️⃣ 顯示/刪除紀錄列表
+            # 3️⃣ 顯示/刪除紀錄列表
             # -----------------------------
             if "oral_data_records" in st.session_state and st.session_state.oral_data_records:
                 df_display = pd.DataFrame(st.session_state.oral_data_records)
@@ -397,7 +383,7 @@ def main():
     
                 st.dataframe(df_display, use_container_width=True)
     
-                # 刪除功能
+                # 清空所有紀錄
                 if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
                     st.session_state.oral_data_records = []
                     st.success("已清空所有紀錄。")
@@ -838,6 +824,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
