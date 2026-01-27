@@ -329,52 +329,33 @@ def main():
             st.subheader("💊 新增口服藥品使用紀錄")
     
             # -----------------------------
-            # 1️⃣ 初始化欄位 (避免 SessionState Exception)
+            # 1️⃣ 初始化 Session State
             # -----------------------------
-            input_keys = {
-                "bed": "",
-                "mrn": "",
-                "expected": 0,
-                "actual": 0,
-                "reason": ""
-            }
-            for k, v in input_keys.items():
-                key_name = f"{ward}_oral_input_{k}"
-                if key_name not in st.session_state:
-                    st.session_state[key_name] = v
+            for key, default in [
+                ("bed", ""),
+                ("mrn", ""),
+                ("expected", 0),
+                ("actual", 0),
+                ("reason", "")
+            ]:
+                state_key = f"{ward}_oral_input_{key}"
+                if state_key not in st.session_state:
+                    st.session_state[state_key] = default
     
             # -----------------------------
-            # 2️⃣ 輸入欄位
+            # 2️⃣ 輸入欄位 (用 key 控制，不傳 value)
             # -----------------------------
             col1, col2 = st.columns(2)
             with col1:
                 current_drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug_input")
-                current_bed = st.text_input(
-                    "床號(填床號數字就好)", 
-                    value=st.session_state[f"{ward}_oral_input_bed"],
-                    key=f"{ward}_oral_input_bed"
-                )
-                current_mrn = st.text_input(
-                    "病歷號", 
-                    value=st.session_state[f"{ward}_oral_input_mrn"],
-                    key=f"{ward}_oral_input_mrn"
-                )
+                current_bed = st.text_input("床號(填床號數字就好)", key=f"{ward}_oral_input_bed")
+                current_mrn = st.text_input("病歷號", key=f"{ward}_oral_input_mrn")
     
             with col2:
-                current_expected = st.number_input(
-                    "應剩餘量", min_value=0, value=st.session_state[f"{ward}_oral_input_expected"],
-                    key=f"{ward}_oral_input_expected"
-                )
-                current_actual = st.number_input(
-                    "實際剩餘量", min_value=0, value=st.session_state[f"{ward}_oral_input_actual"],
-                    key=f"{ward}_oral_input_actual"
-                )
+                current_expected = st.number_input("應剩餘量", min_value=0, step=1, key=f"{ward}_oral_input_expected")
+                current_actual = st.number_input("實際剩餘量", min_value=0, step=1, key=f"{ward}_oral_input_actual")
                 match = (current_expected == current_actual)
-                current_reason = st.text_area(
-                    "不符合原因",
-                    value=st.session_state[f"{ward}_oral_input_reason"],
-                    key=f"{ward}_oral_input_reason"
-                ) if not match else ""
+                current_reason = st.text_area("不符合原因", key=f"{ward}_oral_input_reason") if not match else ""
     
             # -----------------------------
             # 3️⃣ 新增紀錄按鈕
@@ -392,18 +373,14 @@ def main():
                         "是否符合": "符合" if match else "不符合",
                         "不符合原因": current_reason,
                     }
-                    # 將新紀錄加入 session_state
                     if "oral_data_records" not in st.session_state:
                         st.session_state.oral_data_records = []
                     st.session_state.oral_data_records.append(new_record)
                     st.success(f"已成功添加 {current_drug} / 床號 {current_bed} 的紀錄。")
     
-                    # ✅ 清空輸入欄位 (不用 st.rerun)
-                    st.session_state[f"{ward}_oral_input_bed"] = ""
-                    st.session_state[f"{ward}_oral_input_mrn"] = ""
-                    st.session_state[f"{ward}_oral_input_expected"] = 0
-                    st.session_state[f"{ward}_oral_input_actual"] = 0
-                    st.session_state[f"{ward}_oral_input_reason"] = ""
+                    # ✅ 清空輸入欄位
+                    for key in ["bed", "mrn", "expected", "actual", "reason"]:
+                        st.session_state[f"{ward}_oral_input_{key}"] = "" if key in ["bed","mrn","reason"] else 0
     
             st.markdown("---")
             st.subheader("📝 已記錄的口服藥品查核清單")
@@ -861,6 +838,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
