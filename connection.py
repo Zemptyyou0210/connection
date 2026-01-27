@@ -361,7 +361,7 @@ def main():
                     st.session_state.oral_data_records.append(new_record)
                     st.success(f"已成功添加 {current_drug} / 床號 {current_bed} 的紀錄。")
                     # 重新運行以清空輸入欄位，準備下一筆資料
-                    st.rerun() 
+                    st.experimental_rerun()
             
             st.markdown("---")
             st.subheader("📝 已記錄的口服藥品查核清單")
@@ -375,7 +375,7 @@ def main():
                 # 提供刪除功能 (可選)
                 if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
                     st.session_state.oral_data_records = []
-                    st.rerun()
+                    st.experimental_rerun()
             else:
                 st.info("目前沒有任何口服藥品使用紀錄。")
     
@@ -812,6 +812,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
