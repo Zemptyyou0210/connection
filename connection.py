@@ -322,84 +322,68 @@ def main():
     # ------------------------------------------------------------------------------------------------
     
     with st.expander(f"{ward} 口服管制藥品查核"):
-        # 單位是否有使用口服管制藥品
         used_any = st.checkbox(f"單位是否有使用口服管制藥品", key=f"{ward}_used_any")
     
         if used_any:
-            st.subheader("💊 新增口服藥品使用紀錄")
+            # 1️⃣ 使用 st.form 包裹輸入區域
+            with st.form(key=f"{ward}_oral_form", clear_on_submit=True):
+                st.subheader("💊 新增口服藥品使用紀錄")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    current_drug = st.selectbox("選擇查核藥品", oral_drugs)
+                    current_bed = st.text_input("床號(填床號數字就好)")
+                    current_mrn = st.text_input("病歷號")
+    
+                with col2:
+                    current_expected = st.number_input("應剩餘量", min_value=0, step=1)
+                    current_actual = st.number_input("實際剩餘量", min_value=0, step=1)
+                    current_reason = st.text_area("不符合原因 (若符合則免填)")
+    
+                # 2️⃣ 表單專用的提交按鈕
+                submit_button = st.form_submit_button(f"➕ 添加 {current_drug} 查核紀錄")
+    
+                if submit_button:
+                    if not current_bed or not current_mrn:
+                        st.warning("⚠️ 請輸入床號和病歷號。")
+                    else:
+                        # 判斷邏輯
+                        match = (current_expected == current_actual)
+                        new_record = {
+                            "查核藥品": current_drug,
+                            "床號": current_bed,
+                            "病歷號": current_mrn,
+                            "應剩餘量": current_expected,
+                            "實際剩餘量": current_actual,
+                            "是否符合": "符合" if match else "不符合",
+                            "不符合原因": current_reason if not match else "",
+                        }
+                        
+                        if "oral_data_records" not in st.session_state:
+                            st.session_state.oral_data_records = []
+                        
+                        st.session_state.oral_data_records.append(new_record)
+                        st.success(f"✅ 已成功添加紀錄！")
+                        # 因為 clear_on_submit=True，按下後欄位會自動清空，
+                        # 且因為是在 Form 內，不需要手動 st.rerun() 也能更新下方列表。
     
             # -----------------------------
-            # 1️⃣ 輸入欄位 (直接用 value 初始化，安全)
+            # 3️⃣ 顯示列表 (放在 Form 外面)
             # -----------------------------
-            col1, col2 = st.columns(2)
-            with col1:
-                current_drug = st.selectbox("選擇查核藥品", oral_drugs, key=f"{ward}_select_drug_input")
-                current_bed = st.text_input("床號(填床號數字就好)", value="", key=f"{ward}_oral_input_bed")
-                current_mrn = st.text_input("病歷號", value="", key=f"{ward}_oral_input_mrn")
-    
-            with col2:
-                current_expected = st.number_input("應剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_expected")
-                current_actual = st.number_input("實際剩餘量", min_value=0, value=0, step=1, key=f"{ward}_oral_input_actual")
-                match = (current_expected == current_actual)
-                current_reason = st.text_area("不符合原因", value="", key=f"{ward}_oral_input_reason") if not match else ""
-    
-            # -----------------------------
-            # 2️⃣ 新增紀錄按鈕
-            # -----------------------------
-            if st.button(f"➕ 添加 {current_drug} 查核紀錄", key=f"{ward}_add_oral_record"):
-                if not current_bed or not current_mrn:
-                    st.warning("請輸入床號和病歷號。")
-                else:
-                    new_record = {
-                        "查核藥品": current_drug,
-                        "床號": current_bed,
-                        "病歷號": current_mrn,
-                        "應剩餘量": current_expected,
-                        "實際剩餘量": current_actual,
-                        "是否符合": "符合" if match else "不符合",
-                        "不符合原因": current_reason,
-                    }
-                    # 初始化列表
-                    if "oral_data_records" not in st.session_state:
-                        st.session_state.oral_data_records = []
-                    st.session_state.oral_data_records.append(new_record)
-                    st.success(f"已成功添加 {current_drug} / 床號 {current_bed} 的紀錄。")
-    
-                    # ✅ 新增紀錄後欄位自動清空 (透過 value 初始化即可)
-    
             st.markdown("---")
             st.subheader("📝 已記錄的口服藥品查核清單")
     
-            # -----------------------------
-            # 3️⃣ 顯示/刪除紀錄列表
-            # -----------------------------
             if "oral_data_records" in st.session_state and st.session_state.oral_data_records:
-                # 將列表轉成 DataFrame
                 df_display = pd.DataFrame(st.session_state.oral_data_records)
-    
-                # 1️⃣ 避免 LargeUtf8 前端錯誤：截斷長字串
-                for col in df_display.select_dtypes(include=["object"]).columns:
-                    df_display[col] = df_display[col].astype(str).str.slice(0, 200)  # 前200字顯示
-    
+                # 轉換為字串避免 Arrow 錯誤
+                df_display = df_display.astype(str)
                 st.dataframe(df_display, use_container_width=True)
     
-                # 2️⃣ 展示完整「不符合原因」文字
-                for idx, record in enumerate(st.session_state.oral_data_records):
-                    if record["不符合原因"]:
-                        with st.expander(f"床號 {record['床號']} / 藥品 {record['查核藥品']} 的完整不符合原因"):
-                            st.write(record["不符合原因"])
-    
-                # 清空所有紀錄
-                if st.button("清空所有口服紀錄", key=f"{ward}_clear_oral"):
+                if st.button("🗑️ 清空所有口服紀錄", key=f"{ward}_clear_oral"):
                     st.session_state.oral_data_records = []
-                    st.success("已清空所有紀錄。")
-    
+                    st.rerun() # 這裡可以用 rerun，因為它不是在修改元件的 key
             else:
-                st.info("目前沒有任何口服藥品使用紀錄。")
-    
-        else:
-            st.info("本病房未使用口服管制藥品，可跳過查核")
-            st.session_state.oral_data_records = []  # 取消勾選時清空紀錄
+                st.info("💡 目前沒有紀錄。")
 
     # ------------------------------------------------------------------------------------------------
     
@@ -830,6 +814,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
