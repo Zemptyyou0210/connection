@@ -2,7 +2,7 @@ streamlit_drawable_canvas
 openpyxl
 datetime
 Pillow
-reportlab==3.6.12 
+reportlab>=4.0.0
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
