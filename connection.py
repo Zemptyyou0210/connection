@@ -120,7 +120,7 @@ WARD_DRUGS = {
     "SICU": {
         "Morphine HCl 10mg/1mL/Amp": 20,
         "Meperidine(Pethidine) 50mg/mL/Amp": 5,
-        "Fentanyl inj 0.05mg/mL 10mL/Amp":20,
+        "Fentanyl inj 0.05mg/mL 10mL/Amp":30,
         "Codeine phosphate 15mg/imL INJ": 5,
         "Lorazepam 2mg/mL/Amp": 2, 
         "Midazolam 15mg/3mL/Amp":2,
@@ -574,7 +574,7 @@ def main():
                 # 添加查核時間、標題和修訂日期
                 check_time = Paragraph("查核時間 : " + selected_date.strftime("%Y/%m/%d"), revision_style)  # 查核時間
                 report_title = Paragraph("<b>單位1-4級管制藥品月查核表</b>", title_style)  # 標題，加粗處理
-                update_time = Paragraph("更新時間 : 2025.12.04", revision_style)
+                update_time = Paragraph("更新時間 : 2026.4.20", revision_style)
         
                 
                 # 建立標題表格內容
