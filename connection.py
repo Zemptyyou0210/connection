@@ -59,16 +59,16 @@ WARD_DRUGS = {
         "MORPHINE20mg/1mL/Amp(PCA用)(5 amp/包)":10,
         "Morphine HCl 10mg/1mL/Amp":3,
         "Meperidine(Pethidine) 50mg/mL/Amp":3,
-        "Fentanyl(0.05mg/mL) 2mL/Amp":400,
-        "Fentanyl inj 0.05mg/mL 10mL/Amp":110,
+        "Fentanyl(0.05mg/mL) 2mL/Amp":500,
+        "Fentanyl inj 0.05mg/mL 10mL/Amp":80,
         "Fentanyl inj 0.05mg/mL 10mL/Amp(PCA)(4 amp/包)":40,
         "Alfentanil 0.5mg/mL 2mL/Amp":100,
         #"Codeine phosphate 15mg/mL/Amp":,
         "Ketamine 500mg/10mL/Vial":4,
         #"Lorazepam 2mg/mL/Amp":,
         #"Midazolam 15mg/3mL/Amp":,
-        "MIDazolam 五mg/mL/Amp":150,
-        "Thiamylal 300mg/Amp":11,
+        "MIDazolam 五mg/mL/Amp":120,
+        #"Thiamylal 300mg/Amp":11,
         #"Diazepam 10mg/2mL/Amp":,
         "Propofol 200mg/20mL/Amp":600,
         "Etomidate 20mg/10mL/amp":15
@@ -89,9 +89,9 @@ WARD_DRUGS = {
         "Midazolam 15mg/3mL/Amp":5
     },
     
-    "POR": {"Morphine HCl 10mg/1mL/Amp":10,
+    "POR": {"Morphine HCl 10mg/1mL/Amp":20,
             "Meperidine(Pethidine) 50mg/mL/Amp":3,
-            "Fentanyl(0.05mg/mL) 2mL/Amp":40,
+            "Fentanyl(0.05mg/mL) 2mL/Amp":50,
             "Midazolam 15mg/3mL/Amp":2,
             "Diazepam 10mg/2mL/Amp":1
     },
