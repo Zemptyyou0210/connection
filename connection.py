@@ -148,7 +148,7 @@ WARD_DRUGS = {
 
     },
     "9A": {
-        "Morphine HCl 10mg/1mL/Amp": 20,
+        "Morphine HCl 10mg/1mL/Amp": 50,
         "Meperidine(Pethidine) 50mg/mL/Amp": 3,
         "Codeine phosphate 15mg/imL INJ": 4,
         "Lorazepam 2mg/mL/Amp": 1
